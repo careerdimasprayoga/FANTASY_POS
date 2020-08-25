@@ -153,6 +153,7 @@
                       >
                         <b-card-text class="custom-card-text-name font-book">{{item.name}}</b-card-text>
                         <b-card-text class="custom-card-text-price font-medium">{{item.price}}</b-card-text>
+                        <b-button variant="primary" @click="addToCart(item)">Buy</b-button>
                       </b-card>
                     </b-col>
                   </b-row>
@@ -212,6 +213,7 @@ export default {
       limit: 4,
       search: '',
       products: [],
+      cart: [],
       selectOptionCategory: [
         { value: '1', text: 'Food' },
         { value: '0', text: 'Drink' }
@@ -234,6 +236,15 @@ export default {
     this.get_products()
   },
   methods: {
+    addToCart(data) {
+      const setCart = {
+        product_id: data.image,
+        qty: 1
+      }
+      this.cart = [...this.cart, setCart]
+      console.log(this.cart)
+      console.log(data.image)
+    },
     get_products() {
       axios
         .get(
