@@ -134,7 +134,7 @@
                           v-model="search"
                         ></b-input>
 
-                        <b-dropdown
+                        <!-- <b-dropdown
                           id="sort"
                           :text="sortText"
                           class="m-2 sort-btn"
@@ -156,7 +156,7 @@
                             <b-dropdown-item-button @click="sortPriceAsc()">Lowest</b-dropdown-item-button>
                             <b-dropdown-item-button @click="sortPriceDesc()">Highest</b-dropdown-item-button>
                           </b-dropdown-group>
-                        </b-dropdown>
+                        </b-dropdown>-->
                         <b-button type="submit" variant="primary">Find</b-button>
                       </b-form>
                     </b-col>
@@ -170,7 +170,9 @@
                       >
                         <b-card-text class="custom-card-text-name font-book">{{item.name}}</b-card-text>
                         <b-card-text class="custom-card-text-price font-medium">{{item.price}}</b-card-text>
-                        <b-button variant="primary" @click="addToCart(item)">Buy</b-button>
+                        <b-button variant="primary" @click="addToCart(item)" size="sm">Add</b-button>
+                        <b-button variant="info" @click="addToCart(item)" size="sm">Edit</b-button>
+                        <b-button variant="danger" @click="addToCart(item)" size="sm">Delete</b-button>
                       </b-card>
                     </b-col>
                   </b-row>
@@ -190,19 +192,29 @@
                       >
                         <b-card-text style="font-family: AirbnbMedium;">{{item.product_name}}</b-card-text>
 
-                        <b-button variant="primary" size="sm" class="cart-qty">-</b-button>
+                        <b-button
+                          variant="primary"
+                          size="sm"
+                          class="cart-qty"
+                          @click="qtyMin(item)"
+                        >-</b-button>
                         <b-button
                           variant="primary"
                           size="sm"
                           class="cart-qty"
                           style="background-color:white; font-weight: italic; border-left: none; border-right: none;"
                         >{{item.qty}}</b-button>
-                        <b-button variant="primary" size="sm" class="cart-qty" @click="qtyMin()">+</b-button>
+                        <b-button
+                          variant="primary"
+                          size="sm"
+                          class="cart-qty"
+                          @click="qtyPlus(item)"
+                        >+</b-button>
                         <b-button
                           variant="primary"
                           size="sm"
                           style="margin-left: 60px; font-family: airBnbMedium; background-color: white; color: black; border: none;"
-                        >Rp. {{item.product_price}}</b-button>
+                        >Rp. {{item.product_price * item.qty}}</b-button>
                       </b-card>
                     </div>
                   </b-col>
@@ -280,6 +292,20 @@ export default {
     this.get_products()
   },
   methods: {
+    qtyPlus(data) {
+      const incrementData = this.cart.find(
+        (value) => value.product_id === data.product_id
+      )
+      incrementData.qty += 1
+      console.log(this.cart)
+    },
+    qtyMin(data) {
+      const incrementData = this.cart.find(
+        (value) => value.product_id === data.product_id
+      )
+      incrementData.qty -= 1
+      console.log(this.cart)
+    },
     addToCart(data) {
       const setCart = {
         product_id: data.id,
