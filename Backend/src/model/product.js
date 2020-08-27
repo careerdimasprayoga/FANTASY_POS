@@ -1,15 +1,15 @@
 const connection = require("../config/mysql");
 
 module.exports = {
-    getProduct: (limit, offset, search) => {
+    getProduct: (limit, offset) => {
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT * FROM products WHERE name like "%${search}%" LIMIT ? OFFSET ?`, [limit, offset], (error, result) => {
+            connection.query(`SELECT * FROM products LIMIT ? OFFSET ?`, [limit, offset], (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
-    }, searchProduct: (limit, offset, search) => {
+    }, searchProduct: (search) => {
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT * FROM products WHERE name LIKE "%${search}%" LIMIT ? OFFSET ?`, [limit, offset], (error, result) => {
+            connection.query(`SELECT * FROM products WHERE name LIKE "%${search}%"`, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })

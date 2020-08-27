@@ -56,7 +56,7 @@
           <b-form-select v-model="form.id_category" id="input-3" :options="selectOptionCategory"></b-form-select>
         </b-form-group>
 
-        <b-form-group id="input-group-3" label="Category" label-for="input-3">
+        <b-form-group id="input-group-3" label="Status" label-for="input-3">
           <b-form-select v-model="form.status" id="input-3" :options="selectOptionStatus"></b-form-select>
         </b-form-group>
 
@@ -103,10 +103,9 @@
             <div class="d-flex justify-content-center">
               <p style="font-size: 30px; margin-top: 5px">Cart</p>
               <div
-                class="cart-qty"
                 style="width: 30px; height: 30px; background-color: #57CAD5; border-radius: 50px; margin-top: 15px; margin-left:5px;"
               >
-                <p style="font-size: 25px; margin-top: -5px;color:white;">0</p>
+                <p style="font-size: 25px; margin-top: -5px;color:white;">{{this.cart.length}}</p>
               </div>
             </div>
           </b-col>
@@ -127,20 +126,38 @@
                 <b-container fluid>
                   <b-row>
                     <b-col xl="12" style="margin-bottom: 15px;">
-                      <b-form inline class="float-right">
+                      <b-form inline class="float-right" v-on:submit.prevent="search_product">
                         <b-input
                           id="inline-form-input-name"
                           class="mb-2 mr-sm-2 mb-sm-0"
                           placeholder="Search Product"
+                          v-model="search"
                         ></b-input>
 
-                        <b-form-select
-                          id="inline-form-custom-select-pref"
-                          class="mb-2 mr-sm-2 mb-sm-0"
-                          :options="[{ text: 'All', value: null }, { text: 'Latest', value: 'latest' }, { text: 'Oldest', value: 'oldest' }, { text: 'Expensive', value: 'expensive' },{ text: 'Cheapest', value: 'cheapest' }]"
-                          :value="null"
-                        ></b-form-select>
-                        <b-button variant="primary">Find</b-button>
+                        <b-dropdown
+                          id="sort"
+                          :text="sortText"
+                          class="m-2 sort-btn"
+                          variant="primary"
+                        >
+                          <b-dropdown-item-button @click="sortCategory()" active>Category</b-dropdown-item-button>
+                          <b-dropdown-divider></b-dropdown-divider>
+                          <b-dropdown-group id="dropdown-group-1" header="Name">
+                            <b-dropdown-item-button @click="sortNameAsc()">A-Z</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sortNameDesc()">Z-A</b-dropdown-item-button>
+                          </b-dropdown-group>
+                          <b-dropdown-divider></b-dropdown-divider>
+                          <b-dropdown-group id="dropdown-group-2" header="Date">
+                            <b-dropdown-item-button @click="sortDateAsc()">Oldest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sortDateDesc()">Newest</b-dropdown-item-button>
+                          </b-dropdown-group>
+                          <b-dropdown-divider></b-dropdown-divider>
+                          <b-dropdown-group id="dropdown-group-3" header="Price">
+                            <b-dropdown-item-button @click="sortPriceAsc()">Lowest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sortPriceDesc()">Highest</b-dropdown-item-button>
+                          </b-dropdown-group>
+                        </b-dropdown>
+                        <b-button type="submit" variant="primary">Find</b-button>
                       </b-form>
                     </b-col>
 
@@ -163,7 +180,34 @@
               <!-- Cart -->
               <b-col xl="4" md="5" sm="5" xs="12" style="background-color: white;">
                 <b-row>
-                  <b-col xl="12">
+                  <b-col xl="12" v-if="cart.length > 0">
+                    <div class="mt-3 mr-3" v-for="(item, index) in cart" :key="index">
+                      <b-card
+                        v-bind:img-src="require(`../assets/images/products/${item.product_image}`)"
+                        img-alt="Card image"
+                        img-left
+                        class="custom-card-cart custom-padding-cart-body"
+                      >
+                        <b-card-text style="font-family: AirbnbMedium;">{{item.product_name}}</b-card-text>
+
+                        <b-button variant="primary" size="sm" class="cart-qty">-</b-button>
+                        <b-button
+                          variant="primary"
+                          size="sm"
+                          class="cart-qty"
+                          style="background-color:white; font-weight: italic; border-left: none; border-right: none;"
+                        >{{item.qty}}</b-button>
+                        <b-button variant="primary" size="sm" class="cart-qty" @click="qtyMin()">+</b-button>
+                        <b-button
+                          variant="primary"
+                          size="sm"
+                          style="margin-left: 60px; font-family: airBnbMedium; background-color: white; color: black; border: none;"
+                        >Rp. {{item.product_price}}</b-button>
+                      </b-card>
+                    </div>
+                  </b-col>
+
+                  <b-col xl="12" v-else>
                     <div class="text-center">
                       <img
                         src="../assets/images/icons/food_sidebar.png"
@@ -211,9 +255,9 @@ export default {
     return {
       page: 1,
       limit: 4,
-      search: '',
       products: [],
       cart: [],
+      search: '',
       selectOptionCategory: [
         { value: '1', text: 'Food' },
         { value: '0', text: 'Drink' }
@@ -238,7 +282,10 @@ export default {
   methods: {
     addToCart(data) {
       const setCart = {
-        product_id: data.image,
+        product_id: data.id,
+        product_name: data.name,
+        product_image: data.image,
+        product_price: data.price,
         qty: 1
       }
       this.cart = [...this.cart, setCart]
@@ -248,7 +295,7 @@ export default {
     get_products() {
       axios
         .get(
-          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}&search=${this.search}`
+          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}`
         )
         .then((response) => {
           this.products = response.data.data
@@ -257,6 +304,21 @@ export default {
         .catch((error) => {
           console.log(error)
         })
+    },
+    search_product() {
+      if (this.search === '') {
+        this.get_products()
+      } else {
+        axios
+          .get(`http://127.0.0.1:3009/product/search?search=${this.search}`)
+          .then((response) => {
+            this.products = response.data.data
+            console.log(this.products)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
     },
     addProduct() {
       axios
@@ -295,6 +357,9 @@ export default {
   margin-right: auto;
   margin-left: auto;
 }
+.card-img-left .card-body {
+  padding-top: 0px;
+}
 /* Wrapper */
 #wrapper {
   overflow: hidden;
@@ -313,6 +378,13 @@ export default {
   object-fit: cover;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+.custom-card-cart img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  margin: auto;
+  margin-left: 10px;
 }
 @media (max-width: 576px) {
   .custom-card img {
@@ -341,6 +413,17 @@ export default {
 .btn-custom {
   background-color: transparent;
   border: none;
+}
+.custom-padding-cart-body .card-body {
+  padding-top: 5px;
+}
+.cart-qty {
+  border-radius: 0;
+  border: 1px solid #82de3a;
+  background-color: rgba(130, 222, 58, 0.2);
+  color: #82de3a;
+  font-family: AirbnbMedium;
+  font-weight: bold;
 }
 /* Navbar */
 .navbarOne {

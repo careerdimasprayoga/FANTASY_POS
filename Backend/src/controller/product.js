@@ -42,35 +42,20 @@ module.exports = {
             totalPage,
             limit,
             totalData,
-            prevLink: prevLink && `http://127.0.0.1:3002/product?${prevLink}`,
-            nextLink: nextLink && `http://127.0.0.1:3002/product?${nextLink}`
+            prevLink: prevLink && `http://127.0.0.1:3009/product?${prevLink}`,
+            nextLink: nextLink && `http://127.0.0.1:3009/product?${nextLink}`
         }
         try {
-            const result = await getProduct(limit, offset, search);
+            const result = await getProduct(limit, offset);
             return helper.response(response, 200, "Get Product Success", result, pageInfo);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
         }
     }, searchProduct: async (request, response) => {
-        let { page, limit, search } = request.query
-        page = parseInt(page)
-        limit = parseInt(limit)
-        let totalData = await getProductCount()
-        let totalPage = Math.ceil(totalData / limit) // Pembulatan
-        let offset = page * limit - limit // Offset query
-        let prevLink = getPrevLink(page, request.query)
-        let nextLink = getNextLink(page, totalPage, request.query)
-        const pageInfo = {
-            page, // Kalo sama = page = page
-            totalPage,
-            limit,
-            totalData,
-            prevLink: prevLink && `http://127.0.0.1:3002/product?${prevLink}`,
-            nextLink: nextLink && `http://127.0.0.1:3002/product?${nextLink}`
-        }
         try {
-            const result = await searchProduct(limit, offset, search);
-            return helper.response(response, 200, "Get Product Success", result, pageInfo);
+            const { search } = request.query
+            const result = await searchProduct(search);
+            return helper.response(response, 200, "Search Product Success", result);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
         }
