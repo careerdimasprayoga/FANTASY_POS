@@ -98,6 +98,52 @@
       </b-form>
     </b-modal>
     <!-- End Modal -->
+    <!-- Modal Checkout-->
+    <b-modal id="modal-checkout" size="md" title="Add Category" hide-footer hide-header>
+      <b-row>
+        <b-col sm="6">
+          <p class="font-medium">Checkout</p>
+        </b-col>
+        <b-col sm="6" class="text-right">
+          <p class="font-medium">Receipt no: #3201230</p>
+        </b-col>
+        <b-col sm="12" style="margin-top: -15px; margin-bottom: 15px">
+          <p class="font-book">Cashier: Dimas Prayoga</p>
+        </b-col>
+        <b-col sm="12" v-for="(checkoutItem, index) in cart" :key="index">
+          <p class="font-medium">
+            {{checkoutItem.product_name}} {{checkoutItem.qty}}x
+            <span
+              class="float-right"
+            >Rp. {{(checkoutItem.product_price * checkoutItem.qty).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</span>
+          </p>
+        </b-col>
+        <b-col sm="12">
+          <p
+            class="font-medium text-right"
+          >Total: Rp. {{TotalCart().toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</p>
+        </b-col>
+        <b-col sm="12">
+          <p class="font-medium">Payment: Cash</p>
+        </b-col>
+        <b-col sm="12">
+          <b-button
+            @click="checkout"
+            v-b-modal.modal-checkout
+            variant="info"
+            size="md"
+            style="width: 100%; background-color:#F24F8A; margin-bottom: 5px;"
+          >Print</b-button>
+        </b-col>
+        <b-col sm="12">
+          <p class="font-medium text-center" style="margin-bottom: 5px;">Or</p>
+        </b-col>
+        <b-col sm="12">
+          <b-button variant="info" size="md" style="width: 100%;">Send Email</b-button>
+        </b-col>
+      </b-row>
+    </b-modal>
+    <!-- End Modal -->
 
     <div id="page-content-wrapper">
       <b-container fluid>
@@ -234,6 +280,7 @@
                         img-alt="Card image"
                         img-left
                         class="custom-card-cart custom-padding-cart-body"
+                        style="border: none;"
                       >
                         <b-card-text style="font-family: AirbnbMedium;">{{item.product_name}}</b-card-text>
 
@@ -259,7 +306,7 @@
                           variant="primary"
                           size="sm"
                           style="margin-left: 60px; font-family: airBnbMedium; background-color: white; color: black; border: none;"
-                        >Rp. {{item.product_price * item.qty}}</b-button>
+                        >Rp. {{(item.product_price * item.qty).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</b-button>
                       </b-card>
                     </div>
                     <!-- Checkout -->
@@ -274,7 +321,14 @@
                           >Rp. {{TotalCart().toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}} *</p>
                         </b-col>
                         <b-col xl="12" style="margin-top: 5px;">
-                          <b-button squared variant="info" size="md" style="width: 100%;">Checkout</b-button>
+                          <b-button
+                            @click="checkout"
+                            v-b-modal.modal-checkout
+                            squared
+                            variant="info"
+                            size="md"
+                            style="width: 100%;"
+                          >Checkout</b-button>
                         </b-col>
                         <b-col xl="12" style="margin-top: 10px;">
                           <b-button
@@ -349,10 +403,6 @@ export default {
       buttonModalSave: true,
       perPage: 4,
       currentPage: 1,
-      selectOptionCategory: [
-        { value: '1', text: 'Food' },
-        { value: '0', text: 'Drink' }
-      ],
       selectOptionStatus: [
         { value: '1', text: 'Active' },
         { value: '0', text: 'Non Active' }
@@ -381,19 +431,21 @@ export default {
     this.get_category()
   },
   methods: {
+    checkout() {
+      console.log(this.cart)
+      // console.log(TotalCart())
+    },
     qtyPlus(data) {
       const incrementData = this.cart.find(
         (value) => value.product_id === data.product_id
       )
       incrementData.qty += 1
-      console.log(this.cart)
     },
     qtyMin(data) {
       const incrementData = this.cart.find(
         (value) => value.product_id === data.product_id
       )
       incrementData.qty -= 1
-      console.log(this.cart)
     },
     addToCart(data) {
       const setCart = {
@@ -404,8 +456,6 @@ export default {
         qty: 1
       }
       this.cart = [...this.cart, setCart]
-      console.log(this.cart)
-      console.log(data.image)
     },
     TotalCart() {
       let total = 0
@@ -486,7 +536,7 @@ export default {
           .get(`http://127.0.0.1:3009/product/search?search=${this.search}`)
           .then((response) => {
             this.products = response.data.data
-            console.log(this.products)
+            // console.log(this.products)
           })
           .catch((error) => {
             console.log(error)

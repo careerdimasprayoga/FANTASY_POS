@@ -8,22 +8,24 @@ module.exports = {
         try {
             const result = await getAllOrder();
             return helper.response(response, 200, "Get Order Success", result);
-        } catch(error) {
+        } catch (error) {
             return helper.response(response, 400, "Bad request", error);
         }
     }, postOrder: async (request, response) => {
         try {
             let dataPostman = request.body.orders
             // Handle History
-            Array.prototype.sum = function (prop) { var total = 0
-                for ( var i = 0, _len = this.length; i < _len; i++ ) {
+            Array.prototype.sum = function (prop) {
+                var total = 0
+                for (var i = 0, _len = this.length; i < _len; i++) {
                     total += this[i][prop]
                 } return total
             }
             let dataHistory = {
-                invoice : Math.floor((Math.random() * 1000000000) + 1),
-                subtotal : (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
-                date : new Date()
+                invoice: Math.floor((Math.random() * 1000000000) + 1),
+                subtotal: (dataPostman.sum("price")),
+                // subtotal : (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
+                date: new Date()
             }
             const resultHistory = await postHistory(dataHistory)
             const history_id = (resultHistory.product_id)
@@ -39,10 +41,10 @@ module.exports = {
             // })
             for (let i = 0; i < dataPostman.length; i++) {
                 let dataOrder = {
-                    id_history : history_id,
-                    id_product : dataPostman[i].id_product,
-                    ppn : dataPostman[i].ppn,
-                    price : dataPostman[i].price
+                    id_history: history_id,
+                    id_product: dataPostman[i].id_product,
+                    ppn: dataPostman[i].ppn,
+                    price: dataPostman[i].price
                 }
                 const resultOrder = await postOrder(dataOrder)
             }
