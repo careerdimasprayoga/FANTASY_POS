@@ -34,8 +34,8 @@
     </div>
     <!-- End sidemenu -->
     <!-- Modal -->
-    <b-modal id="modal-lg" size="lg" title="Add Food">
-      <b-alert :show="varAlert">Add Product Success</b-alert>
+    <b-modal id="modal-lg" size="lg" :title="this.modalTitle">
+      <b-alert :show="varAlert">{{this.varAlertMessage}} Product Success</b-alert>
       <b-form v-on:submit.prevent="addProduct">
         <!-- .prevent mengatasi reload -->
         <b-form-group id="input-group-1" label="Product Name" label-for="input-1">
@@ -64,7 +64,8 @@
           <b-form-input v-model="form.price" id="input-4" placeholder="Price"></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button type="submit" v-if="buttonModalSave" variant="primary">Save</b-button>
+        <b-button type="button" v-else variant="info" @click="editProduct()">Edit</b-button>
       </b-form>
     </b-modal>
     <!-- End Modal -->
@@ -171,8 +172,13 @@
                         <b-card-text class="custom-card-text-name font-book">{{item.name}}</b-card-text>
                         <b-card-text class="custom-card-text-price font-medium">{{item.price}}</b-card-text>
                         <b-button variant="primary" @click="addToCart(item)" size="sm">Add</b-button>
-                        <b-button variant="info" @click="addToCart(item)" size="sm">Edit</b-button>
-                        <b-button variant="danger" @click="addToCart(item)" size="sm">Delete</b-button>
+                        <b-button
+                          variant="info"
+                          v-b-modal.modal-lg
+                          @click="setUpdateProduct(item)"
+                          size="sm"
+                        >Edit</b-button>
+                        <b-button variant="danger" @click="deleteProduct(item.id)" size="sm">Delete</b-button>
                       </b-card>
                     </b-col>
                   </b-row>
@@ -265,11 +271,15 @@ export default {
   name: 'Axios',
   data() {
     return {
-      page: 1,
+      page: 3,
       limit: 4,
       products: [],
       cart: [],
       search: '',
+      varAlertMessage: '',
+      modalTitle: 'Add Product',
+      productId: '',
+      buttonModalSave: true,
       selectOptionCategory: [
         { value: '1', text: 'Food' },
         { value: '0', text: 'Drink' }
@@ -347,14 +357,53 @@ export default {
       }
     },
     addProduct() {
+      this.modalTitle = 'Add Product'
       axios
         .post('http://127.0.0.1:3009/product', this.form)
+        .then((response) => {
+          this.varAlertMessage = 'Add'
+          this.varAlert = true
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      location.reload()
+    },
+    setUpdateProduct(data) {
+      this.modalTitle = 'Edit Product'
+      this.buttonModalSave = false
+      this.varAlert = false
+      this.form = {
+        name: data.name,
+        image: data.image,
+        id_category: data.id_category,
+        price: data.price,
+        status: data.status
+      }
+      this.productId = data.id
+    },
+    editProduct(data) {
+      axios
+        .patch(`http://127.0.0.1:3009/product/${this.productId}`, this.form)
+        .then((response) => {
+          this.varAlertMessage = 'Edit'
+          this.varAlert = true
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      location.reload()
+    },
+    deleteProduct(id) {
+      axios
+        .delete(`http://127.0.0.1:3009/product/${id}`)
         .then((response) => {
           this.varAlert = true
         })
         .catch((error) => {
           console.log(error)
         })
+      location.reload()
     }
   }
 }
