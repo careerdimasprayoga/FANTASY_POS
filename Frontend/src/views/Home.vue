@@ -34,7 +34,7 @@
     </div>
     <!-- End sidemenu -->
     <!-- Modal -->
-    <b-modal id="modal-lg" size="lg" :title="this.modalTitle">
+    <b-modal id="modal-lg" size="md" :title="this.modalTitle" hide-footer>
       <b-alert :show="varAlert">{{this.varAlertMessage}} Product Success</b-alert>
       <b-form v-on:submit.prevent="addProduct">
         <!-- .prevent mengatasi reload -->
@@ -53,7 +53,13 @@
         </b-form-group>
 
         <b-form-group id="input-group-3" label="Category" label-for="input-3">
-          <b-form-select v-model="form.id_category" id="input-3" :options="selectOptionCategory"></b-form-select>
+          <b-form-select v-model="form.id_category" class="mb-3">
+            <b-form-select-option
+              v-for="(valueCategory, index) in categorys"
+              :key="index"
+              :value="`${valueCategory.category_id}`"
+            >{{valueCategory.category_name}}</b-form-select-option>
+          </b-form-select>
         </b-form-group>
 
         <b-form-group id="input-group-3" label="Status" label-for="input-3">
@@ -63,9 +69,32 @@
         <b-form-group id="input-group-4" label="Price" label-for="input-4">
           <b-form-input v-model="form.price" id="input-4" placeholder="Price"></b-form-input>
         </b-form-group>
+        <b-row>
+          <b-col sm="8">
+            <b-button type="submit" v-if="buttonModalSave" variant="success">Save</b-button>
+            <b-button type="button" v-else variant="info" @click="editProduct()">Edit</b-button>
+          </b-col>
+          <b-col sm="4" align-self="end">
+            <b-button
+              type="button"
+              v-b-modal.modal-category
+              variant="primary"
+              style="margin: auto;"
+            >Add Category</b-button>
+          </b-col>
+        </b-row>
+      </b-form>
+    </b-modal>
+    <!-- End Modal -->
+    <!-- Modal Category-->
+    <b-modal id="modal-category" size="md" title="Add Category" hide-footer>
+      <b-alert :show="varAlert">{{this.varAlertMessage}} Product Success</b-alert>
+      <b-form v-on:submit.prevent="add_category">
+        <b-form-group id="input-group-4" label="Price" label-for="input-4">
+          <b-form-input v-model="form_category.name" id="input-4" placeholder="Category name"></b-form-input>
+        </b-form-group>
 
-        <b-button type="submit" v-if="buttonModalSave" variant="primary">Save</b-button>
-        <b-button type="button" v-else variant="info" @click="editProduct()">Edit</b-button>
+        <b-button type="submit" variant="success">Save</b-button>
       </b-form>
     </b-modal>
     <!-- End Modal -->
@@ -135,29 +164,29 @@
                           v-model="search"
                         ></b-input>
 
-                        <!-- <b-dropdown
+                        <b-dropdown
                           id="sort"
                           :text="sortText"
                           class="m-2 sort-btn"
                           variant="primary"
                         >
-                          <b-dropdown-item-button @click="sortCategory()" active>Category</b-dropdown-item-button>
+                          <b-dropdown-item-button @click="sort_category()" active>Category</b-dropdown-item-button>
                           <b-dropdown-divider></b-dropdown-divider>
                           <b-dropdown-group id="dropdown-group-1" header="Name">
-                            <b-dropdown-item-button @click="sortNameAsc()">A-Z</b-dropdown-item-button>
-                            <b-dropdown-item-button @click="sortNameDesc()">Z-A</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_asc()">A-Z</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_desc()">Z-A</b-dropdown-item-button>
                           </b-dropdown-group>
                           <b-dropdown-divider></b-dropdown-divider>
                           <b-dropdown-group id="dropdown-group-2" header="Date">
-                            <b-dropdown-item-button @click="sortDateAsc()">Oldest</b-dropdown-item-button>
-                            <b-dropdown-item-button @click="sortDateDesc()">Newest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_date_asc()">Oldest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_date_desc()">Newest</b-dropdown-item-button>
                           </b-dropdown-group>
                           <b-dropdown-divider></b-dropdown-divider>
                           <b-dropdown-group id="dropdown-group-3" header="Price">
-                            <b-dropdown-item-button @click="sortPriceAsc()">Lowest</b-dropdown-item-button>
-                            <b-dropdown-item-button @click="sortPriceDesc()">Highest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_price_asc()">Lowest</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="sort_price_desc()">Highest</b-dropdown-item-button>
                           </b-dropdown-group>
-                        </b-dropdown>-->
+                        </b-dropdown>
                         <b-button type="submit" variant="primary">Find</b-button>
                       </b-form>
                     </b-col>
@@ -170,7 +199,9 @@
                         class="custom-card"
                       >
                         <b-card-text class="custom-card-text-name font-book">{{item.name}}</b-card-text>
-                        <b-card-text class="custom-card-text-price font-medium">{{item.price}}</b-card-text>
+                        <b-card-text
+                          class="custom-card-text-price font-medium"
+                        >Rp. {{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') }}</b-card-text>
                         <b-button variant="primary" @click="addToCart(item)" size="sm">Add</b-button>
                         <b-button
                           variant="info"
@@ -182,6 +213,14 @@
                       </b-card>
                     </b-col>
                   </b-row>
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                    aria-controls="my-table"
+                    @change="handlePage"
+                    align-h="end"
+                  ></b-pagination>
                 </b-container>
               </b-col>
               <!-- End Food Items -->
@@ -223,6 +262,31 @@
                         >Rp. {{item.product_price * item.qty}}</b-button>
                       </b-card>
                     </div>
+                    <!-- Checkout -->
+                    <b-container>
+                      <b-row>
+                        <b-col xl="4" style="margin-top: 20px;">
+                          <p>Total:</p>
+                        </b-col>
+                        <b-col xl="8" style="margin-top: 20px;">
+                          <p
+                            class="text-right"
+                          >Rp. {{TotalCart().toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}} *</p>
+                        </b-col>
+                        <b-col xl="12" style="margin-top: 5px;">
+                          <b-button squared variant="info" size="md" style="width: 100%;">Checkout</b-button>
+                        </b-col>
+                        <b-col xl="12" style="margin-top: 10px;">
+                          <b-button
+                            @click="reset_cart()"
+                            squared
+                            variant="danger"
+                            size="md"
+                            style="width: 100%;"
+                          >Cancel</b-button>
+                        </b-col>
+                      </b-row>
+                    </b-container>
                   </b-col>
 
                   <b-col xl="12" v-else>
@@ -271,15 +335,20 @@ export default {
   name: 'Axios',
   data() {
     return {
-      page: 3,
-      limit: 4,
+      page: 1,
+      limit: 3,
       products: [],
+      categorys: [],
       cart: [],
       search: '',
+      sort: '',
+      sortText: 'Sort',
       varAlertMessage: '',
       modalTitle: 'Add Product',
       productId: '',
       buttonModalSave: true,
+      perPage: 4,
+      currentPage: 1,
       selectOptionCategory: [
         { value: '1', text: 'Food' },
         { value: '0', text: 'Drink' }
@@ -295,11 +364,21 @@ export default {
         price: '',
         status: ''
       },
-      varAlert: false
+      form_category: {
+        name: ''
+      },
+      varAlert: false,
+      totalRows: null
+    }
+  },
+  computed: {
+    rows() {
+      return this.totalRows
     }
   },
   created() {
     this.get_products()
+    this.get_category()
   },
   methods: {
     qtyPlus(data) {
@@ -328,18 +407,76 @@ export default {
       console.log(this.cart)
       console.log(data.image)
     },
-    get_products() {
+    TotalCart() {
+      let total = 0
+      for (let i = 0; i < this.cart.length; i++) {
+        total += this.cart[i].product_price * this.cart[i].qty
+      }
+      return total
+    },
+    reset_cart() {
+      this.cart = []
+    },
+    get_category() {
       axios
-        .get(
-          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}`
-        )
+        .get('http://127.0.0.1:3009/category')
         .then((response) => {
-          this.products = response.data.data
-          console.log(this.products)
+          this.categorys = response.data.data
         })
         .catch((error) => {
           console.log(error)
         })
+    },
+    get_products() {
+      axios
+        .get(
+          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}&sort=${this.sort}`
+        )
+        .then((response) => {
+          this.products = response.data.data
+          this.totalRows = response.data.pagination.totalData
+          // console.log(response)
+          // this.perPage = response.data.pagination.totalPage
+          // console.log(response.data.pagination.totalPage)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    sort_category() {
+      this.sortText = 'Category'
+      this.sort = 'id_category'
+      this.get_products()
+    },
+    sort_asc() {
+      this.sortText = 'Name (A-Z)'
+      this.sort = 'name asc'
+      this.get_products()
+    },
+    sort_desc() {
+      this.sort = 'Name (Z-A)'
+      this.sort = 'name desc'
+      this.get_products()
+    },
+    sort_date_asc() {
+      this.sort = 'Date (Newest)'
+      this.sort = 'created asc'
+      this.get_products()
+    },
+    sort_date_desc() {
+      this.sort = 'Date (Oldest)'
+      this.sort = 'created desc'
+      this.get_products()
+    },
+    sort_price_asc() {
+      this.sortText = 'Price (Lowest)'
+      this.sort = 'price ASC'
+      this.get_products()
+    },
+    sort_price_desc() {
+      this.sortText = 'Price (Highest)'
+      this.sort = 'price DESC'
+      this.get_products()
     },
     search_product() {
       if (this.search === '') {
@@ -356,6 +493,17 @@ export default {
           })
       }
     },
+    add_category() {
+      axios
+        .post('http://127.0.0.1:3009/category', this.form_category)
+        .then((response) => {
+          this.form_category = []
+          this.get_category()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
     addProduct() {
       this.modalTitle = 'Add Product'
       axios
@@ -363,11 +511,12 @@ export default {
         .then((response) => {
           this.varAlertMessage = 'Add'
           this.varAlert = true
+          this.form = []
+          this.get_products()
         })
         .catch((error) => {
           console.log(error)
         })
-      location.reload()
     },
     setUpdateProduct(data) {
       this.modalTitle = 'Edit Product'
@@ -376,7 +525,7 @@ export default {
       this.form = {
         name: data.name,
         image: data.image,
-        id_category: data.id_category,
+        id_category: data.category_id,
         price: data.price,
         status: data.status
       }
@@ -388,22 +537,27 @@ export default {
         .then((response) => {
           this.varAlertMessage = 'Edit'
           this.varAlert = true
+          this.form = [] // Check this if error
+          this.buttonModalSave = true
+          this.get_products()
         })
         .catch((error) => {
           console.log(error)
         })
-      location.reload()
     },
     deleteProduct(id) {
       axios
         .delete(`http://127.0.0.1:3009/product/${id}`)
         .then((response) => {
-          this.varAlert = true
+          this.get_products()
         })
         .catch((error) => {
           console.log(error)
         })
-      location.reload()
+    },
+    handlePage(pages) {
+      this.page = pages
+      this.get_products()
     }
   }
 }

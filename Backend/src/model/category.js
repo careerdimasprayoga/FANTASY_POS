@@ -2,24 +2,24 @@ const connection = require("../config/mysql");
 
 module.exports = {
     getAllCategory: () => {
-        return new Promise((resolve,reject) => {
-            connection.query(`SELECT * FROM category`, (error, result) => {
+        return new Promise((resolve, reject) => {
+            connection.query(`SELECT id as category_id, name as category_name FROM categorys`, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
     },
     getCategoryById: (id) => {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM category WHERE id = ?", id, (error, result) => {
+            connection.query("SELECT * FROM categorys WHERE id = ?", id, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             })
         })
     },
     postCategory: (setData) => {
         return new Promise((resolve, reject) => {
-            connection.query("INSERT INTO category SET ?", setData, (error, result) => {
+            connection.query("INSERT INTO categorys SET ?", setData, (error, result) => {
                 console.log(result)
-                if(!error) {
+                if (!error) {
                     const newResult = {
                         ...setData
                     }
@@ -32,8 +32,8 @@ module.exports = {
     },
     patchCategory: (setData, id) => {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE category SET ? WHERE id = ?", [setData, id], (error, result) => {
-                if(!error) {
+            connection.query("UPDATE categorys SET ? WHERE id = ?", [setData, id], (error, result) => {
+                if (!error) {
                     const newResult = {
                         category_id: id
                     }
@@ -46,10 +46,10 @@ module.exports = {
     },
     deleteCategory: (id) => {
         return new Promise((resolve, reject) => {
-            connection.query("DELETE FROM category WHERE id = ?", id, (error, result) => {
-                if(!error) {
+            connection.query("DELETE FROM categorys WHERE id = ?", id, (error, result) => {
+                if (!error) {
                     const newResult = {
-                        id:id
+                        id: id
                     }
                     resolve(newResult)
                 } else {

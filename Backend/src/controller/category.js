@@ -6,7 +6,7 @@ module.exports = {
         try {
             const result = await getAllCategory();
             return helper.response(response, 200, "Get Category Success", result);
-        } catch(error) {
+        } catch (error) {
             return helper.response(response, 400, "Bad request", error);
         }
     },
@@ -23,10 +23,10 @@ module.exports = {
             return helper.response(response, 400, "Bad request", error);
         }
     },
-    postCategory: async(request, response) => {
+    postCategory: async (request, response) => {
         try {
             const setData = {
-                name: request.body.category_name
+                name: request.body.name
             }
             const result = await postCategory(setData)
             console.log(setData)
@@ -35,7 +35,7 @@ module.exports = {
             return helper.response(response, 400, "Bad Request", error);
         }
     },
-    patchCategory: async(request, response) => {
+    patchCategory: async (request, response) => {
         try {
             const { id } = request.params
             const setData = {
@@ -52,9 +52,9 @@ module.exports = {
             return helper.response(response, 400, "Bad Request", error);
         }
     },
-    deleteCategory: async(request, response) => {
+    deleteCategory: async (request, response) => {
         try {
-            const{ id } = request.params
+            const { id } = request.params
             const result = await deleteCategory(id)
             response.send("Delete Category Success")
         } catch (error) {

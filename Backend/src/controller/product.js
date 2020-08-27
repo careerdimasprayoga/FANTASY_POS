@@ -29,7 +29,7 @@ const getNextLink = (page, totalPage, currentQuery) => {
 
 module.exports = {
     getAllProduct: async (request, response) => {
-        let { page, limit, search } = request.query
+        let { page, limit, sort } = request.query
         page = parseInt(page)
         limit = parseInt(limit)
         let totalData = await getProductCount()
@@ -45,8 +45,11 @@ module.exports = {
             prevLink: prevLink && `http://127.0.0.1:3009/product?${prevLink}`,
             nextLink: nextLink && `http://127.0.0.1:3009/product?${nextLink}`
         }
+        if (sort === undefined || sort === "") {
+            sort = "id"
+        }
         try {
-            const result = await getProduct(limit, offset);
+            const result = await getProduct(limit, offset, sort);
             return helper.response(response, 200, "Get Product Success", result, pageInfo);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
