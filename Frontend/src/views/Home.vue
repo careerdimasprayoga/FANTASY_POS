@@ -432,14 +432,28 @@ export default {
   },
   methods: {
     checkout() {
-      console.log(this.cart)
-      // console.log(TotalCart())
+      const setCart = {
+        orders: [...this.cart]
+      }
+      console.log(setCart)
+
+      axios
+        .post('http://127.0.0.1:3009/order')
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     qtyPlus(data) {
       const incrementData = this.cart.find(
         (value) => value.product_id === data.product_id
       )
       incrementData.qty += 1
+      incrementData.price = data.product_price * data.qty
+      incrementData.ppn = (data.price * 5) / 100
+      console.log(this.cart)
     },
     qtyMin(data) {
       const incrementData = this.cart.find(
@@ -448,14 +462,31 @@ export default {
       incrementData.qty -= 1
     },
     addToCart(data) {
+      // const checkCart = this.cart.find(
+      //   (value) => value.product_id === data.product_id
+      // )
+      // console.log(checkCart)
       const setCart = {
         product_id: data.id,
         product_name: data.name,
         product_image: data.image,
         product_price: data.price,
+        price: data.price * 1,
+        ppn: (data.price * 5) / 100,
         qty: 1
       }
       this.cart = [...this.cart, setCart]
+      // const fixData = [...this.cart, setCart]
+      // const addItem = fixData.find(
+      //   (value) => value.product_id === data.product_id
+      // )
+      // if (checkCart) {
+      //   addItem.qty += 1
+      //   console.log(true)
+      // } else {
+      //   this.cart = [...this.cart, setCart]
+      //   console.log(false)
+      // }
     },
     TotalCart() {
       let total = 0
