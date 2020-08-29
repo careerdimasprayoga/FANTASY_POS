@@ -14,43 +14,32 @@ module.exports = {
     }, postOrder: async (request, response) => {
         try {
             let dataPostman = request.body.orders
-            console.log(request.body)
-            // // Handle History
-            // Array.prototype.sum = function (prop) {
-            //     var total = 0
-            //     for (var i = 0, _len = this.length; i < _len; i++) {
-            //         total += this[i][prop]
-            //     } return total
-            // }
-            // let dataHistory = {
-            //     invoice: Math.floor((Math.random() * 1000000000) + 1),
-            //     subtotal: (dataPostman.sum("price")),
-            //     // subtotal : (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
-            //     date: new Date()
-            // }
-            // const resultHistory = await postHistory(dataHistory)
-            // const history_id = (resultHistory.product_id)
-            // // dataPostman.map(async (value) => {
-            // //     let dataOrder = {
-            // //         id_history : 2,
-            // //         id_product : value.id_product,
-            // //         ppn : value.ppn,
-            // //         price : value.price
-            // //     }
-            // //     const resultOrder = await MpostOrder(dataOrder)
-            // //     console.log(dataOrder)
-            // // })
-            // for (let i = 0; i < dataPostman.length; i++) {
-            //     let dataOrder = {
-            //         id_history: history_id,
-            //         id_product: dataPostman[i].id_product,
-            //         ppn: dataPostman[i].ppn,
-            //         price: dataPostman[i].price
-            //     }
-            //     const resultOrder = await postOrder(dataOrder)
-            // }
+            // Handle History Subtotal
+            Array.prototype.sum = function (prop) {
+                var total = 0
+                for (var i = 0, _len = this.length; i < _len; i++) {
+                    total += this[i][prop]
+                } return total
+            }
+            let dataHistory = {
+                invoice: dataPostman[0].invoice,
+                subtotal: (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
+                date: new Date()
+            }
+            const resultHistory = await postHistory(dataHistory)
+            const history_id = (resultHistory.product_id)
 
-            // return helper.response(response, 201, "Create Order Success", resultHistory);
+            for (let i = 0; i < dataPostman.length; i++) {
+                let dataOrder = {
+                    id_product: dataPostman[i].product_id,
+                    id_history: history_id,
+                    qty: dataPostman[i].qty,
+                    price: dataPostman[i].price,
+                    ppn: dataPostman[i].price * 5 / 100
+                }
+                const resultOrder = await postOrder(dataOrder)
+            }
+            return helper.response(response, 201, "Create Order Success", resultHistory);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
         }

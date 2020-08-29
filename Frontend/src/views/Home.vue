@@ -105,7 +105,7 @@
           <p class="font-medium">Checkout</p>
         </b-col>
         <b-col sm="6" class="text-right">
-          <p class="font-medium">Receipt no: #3201230</p>
+          <p class="font-medium">Receipt no: #{{this.invoice}}</p>
         </b-col>
         <b-col sm="12" style="margin-top: -15px; margin-bottom: 15px">
           <p class="font-book">Cashier: Dimas Prayoga</p>
@@ -394,6 +394,7 @@ export default {
       products: [],
       categorys: [],
       cart: [],
+      invoice: Math.floor(Math.random() * 1000000000 + 1),
       search: '',
       sort: '',
       sortText: 'Sort',
@@ -435,13 +436,9 @@ export default {
       const setCart = {
         orders: [...this.cart]
       }
-      console.log(setCart)
-
       axios
-        .post('http://127.0.0.1:3009/order')
-        .then((response) => {
-          console.log(response)
-        })
+        .post('http://127.0.0.1:3009/order', setCart)
+        .then((response) => {})
         .catch((error) => {
           console.log(error)
         })
@@ -453,7 +450,6 @@ export default {
       incrementData.qty += 1
       incrementData.price = data.product_price * data.qty
       incrementData.ppn = (data.price * 5) / 100
-      console.log(this.cart)
     },
     qtyMin(data) {
       const incrementData = this.cart.find(
@@ -462,11 +458,8 @@ export default {
       incrementData.qty -= 1
     },
     addToCart(data) {
-      // const checkCart = this.cart.find(
-      //   (value) => value.product_id === data.product_id
-      // )
-      // console.log(checkCart)
       const setCart = {
+        invoice: this.invoice,
         product_id: data.id,
         product_name: data.name,
         product_image: data.image,
