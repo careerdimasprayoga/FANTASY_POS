@@ -12,14 +12,14 @@
       </b-row>
       <b-row class="sidemenu-header-box text-center align-items-center">
         <b-col xl="12">
-          <a href class="modify-link-text">
+          <a href="/" class="modify-link-text">
             <img src="../assets/images/icons/fork.png" style="width: 40px; height: 40px;" />
           </a>
         </b-col>
       </b-row>
       <b-row class="sidemenu-header-box text-center align-items-center">
         <b-col xl="12">
-          <a href class="modify-link-text">
+          <a href="/history" class="modify-link-text">
             <img src="../assets/images/icons/clipboard.png" style="width: 40px; height: 40px;" />
           </a>
         </b-col>
@@ -165,7 +165,7 @@
                   class="col-8 text-center"
                   style="margin-top: 5px;"
                 >
-                  <p style="font-size: 30px">Food Items</p>
+                  <p style="font-size: 30px">Fantasy POS | Food Items</p>
                 </b-col>
                 <b-col xl="1" lg="2" md="2" sm="2" xs="1" class="col-2" style="margin-top: 15px;">
                   <button class="btn-custom">
