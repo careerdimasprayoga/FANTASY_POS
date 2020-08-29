@@ -1,4 +1,4 @@
-const { postOrder, getAllOrder } = require("../model/order")
+const { postOrder, today_income, total_order, total_yearIncome, getAllOrder } = require("../model/order")
 const { postHistory } = require("../model/history")
 const helper = require("../helper/index.js")
 
@@ -7,6 +7,27 @@ module.exports = {
     getAllOrder: async (request, response) => {
         try {
             const result = await getAllOrder();
+            return helper.response(response, 200, "Get Order Success", result);
+        } catch (error) {
+            return helper.response(response, 400, "Bad request", error);
+        }
+    }, today_income: async (request, response) => {
+        try {
+            const result = await today_income();
+            return helper.response(response, 200, "Get Order Success", result);
+        } catch (error) {
+            return helper.response(response, 400, "Bad request", error);
+        }
+    }, total_order: async (request, response) => {
+        try {
+            const result = await total_order();
+            return helper.response(response, 200, "Get Order Success", result);
+        } catch (error) {
+            return helper.response(response, 400, "Bad request", error);
+        }
+    }, total_yearIncome: async (request, response) => {
+        try {
+            const result = await total_yearIncome();
             return helper.response(response, 200, "Get Order Success", result);
         } catch (error) {
             return helper.response(response, 400, "Bad request", error);

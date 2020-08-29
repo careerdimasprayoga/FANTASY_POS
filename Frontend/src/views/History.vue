@@ -39,7 +39,7 @@
         <!-- Header -->
         <b-row style="margin-left:0px;">
           <b-col xl="12" md="12" sm="12" xs="12" class="navbarOne">
-            <b-container>
+            <b-container fluid>
               <b-row>
                 <b-col
                   xl="10"
@@ -126,13 +126,69 @@
           <b-col xl="12" md="12" sm="12" class="background-content">
             <!-- Food Items -->
             <b-row>
-              <b-col
-                xl="12"
-                md="12"
-                sm="12"
-                style="padding-right: 30px;padding-left: 30px;padding-top: 20px;"
-              >
-                <b-container fluid>a</b-container>
+              <b-col sm="12" style="padding-right: 30px;padding-left: 30px;padding-top: 20px;">
+                <b-container fluid>
+                  <b-row>
+                    <b-col sm="4">
+                      <div class="card">
+                        <div
+                          class="card-body"
+                          style="background-image: linear-gradient(-90deg, #FBB2B4, rgba(255, 143, 178, 0.25));"
+                        >
+                          <p class="card-text">Today's Income</p>
+                          <h5
+                            class="card-title"
+                          >Rp. {{(this.card_todayIncome).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</h5>
+                          <p class="card-text">+2% Yesterday</p>
+                        </div>
+                      </div>
+                    </b-col>
+                    <b-col sm="4">
+                      <div class="card">
+                        <div
+                          class="card-body"
+                          style="background-image: linear-gradient(-90deg, #29DFFF, rgba(41, 223, 255, 0.25));"
+                        >
+                          <p class="card-text">Orders</p>
+                          <h5
+                            class="card-title"
+                          >{{(this.card_order).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</h5>
+                          <p class="card-text">+5% Lastweek</p>
+                        </div>
+                      </div>
+                    </b-col>
+                    <b-col sm="4">
+                      <div class="card">
+                        <div
+                          class="card-body"
+                          style="background-image: linear-gradient(-90deg, #AB84C8, rgba(241, 201, 236, 0.25));"
+                        >
+                          <p class="card-text">This Year's Income</p>
+                          <h5 class="card-title">Rp. 1.000.000.000.000</h5>
+                          <p class="card-text">+10% Lastyear</p>
+                        </div>
+                      </div>
+                    </b-col>
+                    <b-col sm="12" style="margin-top: 20px;">
+                      <b-container fluid style="background-color: white; border-radius:5px;">
+                        <b-row>
+                          <b-col sm="12">
+                            <div style="margin-left: 20px; margin-top: 20px;">
+                              <h4 class="font-medium">Revenue</h4>
+                            </div>
+                            <line-chart :data="data" />
+                          </b-col>
+                        </b-row>
+                      </b-container>
+                    </b-col>
+                    <b-col sm="12" style="margin-top: 20px; margin-bottom: 30px;">
+                      <div style="background-color: white; border-radius: 5px;padding: 20px;">
+                        <h4 class="font-medium">Revenue</h4>
+                        <b-table striped hover :items="order" :fields="tableFields"></b-table>
+                      </div>
+                    </b-col>
+                  </b-row>
+                </b-container>
               </b-col>
               <!-- End Food Items -->
             </b-row>
@@ -160,20 +216,53 @@ export default {
   name: 'Axios',
   data() {
     return {
+      data: [
+        {
+          name: 'This Month',
+          data: {
+            '2020-01-01': 3,
+            '2020-01-02': 4,
+            '2020-01-03': 23,
+            '2020-01-04': 1,
+            '2020-01-05': 1,
+            '2020-01-06': 2,
+            '2020-01-07': 7,
+            '2020-01-08': 32,
+            '2020-01-09': 11
+          }
+        },
+        {
+          name: 'Last Month',
+          data: {
+            '2020-01-01': 3,
+            '2020-01-02': 4,
+            '2020-01-03': 7,
+            '2020-01-04': 1,
+            '2020-01-05': 25,
+            '2020-01-06': 2,
+            '2020-01-07': 1,
+            '2020-01-08': 32,
+            '2020-01-09': 11
+          }
+        }
+      ],
+      tableFields: ['invoices', 'cashiers', 'dates', 'names', 'subtotals'],
+      tableItems: [],
+      orderDummy: [],
+      order: [],
       page: 1,
       limit: 3,
       products: [],
       categorys: [],
       cart: [],
+      card_todayIncome: '',
+      card_order: '',
+      card_yearIncome: '',
       invoice: Math.floor(Math.random() * 1000000000 + 1),
-      search: '',
-      sort: '',
-      sortText: 'Sort',
       varAlertMessage: '',
       modalTitle: 'Add Product',
       productId: '',
       buttonModalSave: true,
-      perPage: 4,
       currentPage: 1,
       selectOptionStatus: [
         { value: '1', text: 'Active' },
@@ -199,140 +288,62 @@ export default {
     }
   },
   created() {
-    this.get_products()
-    this.get_category()
+    this.get_order()
+    this.today_incomes()
+    this.orders()
   },
   methods: {
-    checkout() {
-      const setCart = {
-        orders: [...this.cart]
-      }
+    get_order() {
       axios
-        .post('http://127.0.0.1:3009/order', setCart)
-        .then((response) => {})
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    qtyPlus(data) {
-      const incrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      incrementData.qty += 1
-      incrementData.price = data.product_price * data.qty
-      incrementData.ppn = (data.price * 5) / 100
-    },
-    qtyMin(data) {
-      const incrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      incrementData.qty -= 1
-    },
-    addToCart(data) {
-      const setCart = {
-        invoice: this.invoice,
-        product_id: data.id,
-        product_name: data.name,
-        product_image: data.image,
-        product_price: data.price,
-        price: data.price * 1,
-        ppn: (data.price * 5) / 100,
-        qty: 1
-      }
-      const fixedData = [...this.cart, setCart]
-      const addedItem = fixedData.find((item) => item.product_id === data.id)
-      const existItem = this.cart.find((item) => item.product_id === data.id)
-      if (existItem) {
-        addedItem.qty += 1
-      } else {
-        this.cart = [...this.cart, setCart]
-      }
-    },
-    TotalCart() {
-      let total = 0
-      for (let i = 0; i < this.cart.length; i++) {
-        total += this.cart[i].product_price * this.cart[i].qty
-      }
-      return total
-    },
-    reset_cart() {
-      this.cart = []
-    },
-    get_category() {
-      axios
-        .get('http://127.0.0.1:3009/category')
+        .get('http://127.0.0.1:3009/order')
         .then((response) => {
-          this.categorys = response.data.data
+          this.orderDummy = response.data.data
+          this.orderDummy.map((value) => {
+            const setItem = {
+              invoices: `#${value.invoices}`,
+              cashiers: 'Dimas Prayoga',
+              dates: value.dates.slice(0, 10),
+              names: value.names,
+              subtotals: `Rp. ${value.subtotals
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`
+            }
+            this.order = [...this.order, setItem]
+          })
         })
         .catch((error) => {
           console.log(error)
         })
     },
-    get_products() {
+    today_incomes() {
       axios
-        .get(
-          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}&sort=${this.sort}`
-        )
+        .get('http://127.0.0.1:3009/order/today_income')
         .then((response) => {
-          this.products = response.data.data
-          this.totalRows = response.data.pagination.totalData
-          // console.log(response)
-          // this.perPage = response.data.pagination.totalPage
-          // console.log(response.data.pagination.totalPage)
+          this.card_todayIncome = response.data.data[0].subtotals
         })
         .catch((error) => {
           console.log(error)
         })
     },
-    sort_category() {
-      this.sortText = 'Category'
-      this.sort = 'id_category'
-      this.get_products()
+    orders() {
+      axios
+        .get('http://127.0.0.1:3009/order/total_order')
+        .then((response) => {
+          this.card_order = response.data.data[0].totals
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
-    sort_asc() {
-      this.sortText = 'Name (A-Z)'
-      this.sort = 'name asc'
-      this.get_products()
-    },
-    sort_desc() {
-      this.sort = 'Name (Z-A)'
-      this.sort = 'name desc'
-      this.get_products()
-    },
-    sort_date_asc() {
-      this.sort = 'Date (Newest)'
-      this.sort = 'created asc'
-      this.get_products()
-    },
-    sort_date_desc() {
-      this.sort = 'Date (Oldest)'
-      this.sort = 'created desc'
-      this.get_products()
-    },
-    sort_price_asc() {
-      this.sortText = 'Price (Lowest)'
-      this.sort = 'price ASC'
-      this.get_products()
-    },
-    sort_price_desc() {
-      this.sortText = 'Price (Highest)'
-      this.sort = 'price DESC'
-      this.get_products()
-    },
-    search_product() {
-      if (this.search === '') {
-        this.get_products()
-      } else {
-        axios
-          .get(`http://127.0.0.1:3009/product/search?search=${this.search}`)
-          .then((response) => {
-            this.products = response.data.data
-            // console.log(this.products)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
+    years_income() {
+      axios
+        .get('http://127.0.0.1:3009/order/year_income')
+        .then((response) => {
+          this.card_yearIncome = response.data.data[0].totals
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     add_category() {
       axios
@@ -380,16 +391,6 @@ export default {
           this.varAlert = true
           this.form = [] // Check this if error
           this.buttonModalSave = true
-          this.get_products()
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    deleteProduct(id) {
-      axios
-        .delete(`http://127.0.0.1:3009/product/${id}`)
-        .then((response) => {
           this.get_products()
         })
         .catch((error) => {
