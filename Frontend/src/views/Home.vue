@@ -475,18 +475,14 @@ export default {
         ppn: (data.price * 5) / 100,
         qty: 1
       }
-      this.cart = [...this.cart, setCart]
-      // const fixData = [...this.cart, setCart]
-      // const addItem = fixData.find(
-      //   (value) => value.product_id === data.product_id
-      // )
-      // if (checkCart) {
-      //   addItem.qty += 1
-      //   console.log(true)
-      // } else {
-      //   this.cart = [...this.cart, setCart]
-      //   console.log(false)
-      // }
+      const fixedData = [...this.cart, setCart]
+      const addedItem = fixedData.find((item) => item.product_id === data.id)
+      const existItem = this.cart.find((item) => item.product_id === data.id)
+      if (existItem) {
+        addedItem.qty += 1
+      } else {
+        this.cart = [...this.cart, setCart]
+      }
     },
     TotalCart() {
       let total = 0
