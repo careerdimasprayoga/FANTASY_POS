@@ -164,7 +164,9 @@
                           style="background-image: linear-gradient(-90deg, #AB84C8, rgba(241, 201, 236, 0.25));"
                         >
                           <p class="card-text">This Year's Income</p>
-                          <h5 class="card-title">Rp. 1.000.000.000.000</h5>
+                          <h5
+                            class="card-title"
+                          >Rp. {{(this.card_yearIncome).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}}</h5>
                           <p class="card-text">+10% Lastyear</p>
                         </div>
                       </div>
@@ -176,7 +178,7 @@
                             <div style="margin-left: 20px; margin-top: 20px;">
                               <h4 class="font-medium">Revenue</h4>
                             </div>
-                            <line-chart :data="data" />
+                            <line-chart :data="chart_thisMonth" />
                           </b-col>
                         </b-row>
                       </b-container>
@@ -220,15 +222,15 @@ export default {
         {
           name: 'This Month',
           data: {
-            '2020-01-01': 3,
-            '2020-01-02': 4,
-            '2020-01-03': 23,
-            '2020-01-04': 1,
-            '2020-01-05': 1,
-            '2020-01-06': 2,
-            '2020-01-07': 7,
-            '2020-01-08': 32,
-            '2020-01-09': 11
+            '2020-01-01': 30000,
+            '2020-01-02': 40000,
+            '2020-01-03': 23000,
+            '2020-01-04': 10000,
+            '2020-01-05': 13000,
+            '2020-01-06': 2000,
+            '2020-01-07': 7000,
+            '2020-01-08': 320000,
+            '2020-01-09': 11000
           }
         },
         {
@@ -246,6 +248,8 @@ export default {
           }
         }
       ],
+      this_months: '',
+      last_months: '',
       tableFields: ['invoices', 'cashiers', 'dates', 'names', 'subtotals'],
       tableItems: [],
       orderDummy: [],
@@ -258,6 +262,8 @@ export default {
       card_todayIncome: '',
       card_order: '',
       card_yearIncome: '',
+      chart_thisMonth: [],
+      chart_lastMonth: '',
       invoice: Math.floor(Math.random() * 1000000000 + 1),
       varAlertMessage: '',
       modalTitle: 'Add Product',
@@ -291,6 +297,9 @@ export default {
     this.get_order()
     this.today_incomes()
     this.orders()
+    this.years_income()
+    this.thisMonth()
+    this.lastMonth()
   },
   methods: {
     get_order() {
@@ -337,9 +346,40 @@ export default {
     },
     years_income() {
       axios
-        .get('http://127.0.0.1:3009/order/year_income')
+        .get('http://127.0.0.1:3009/order/total_yearIncome')
         .then((response) => {
-          this.card_yearIncome = response.data.data[0].totals
+          this.card_yearIncome = response.data.data[0].subtotals
+          // console.log(response.data.data[0].subtotals)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    thisMonth() {
+      axios
+        .get('http://127.0.0.1:3009/order/this_month')
+        .then((response) => {
+          const setChart = response.data.data
+          for (let i = 0; i < setChart.length; i++) {
+            this.chart_thisMonth.push([
+              setChart[i].dates,
+              setChart[i].subtotals
+            ])
+          }
+
+          // this.card_yearIncome = response.data.data[0].subtotals
+          console.log(this.chart_thisMonth)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    lastMonth() {
+      axios
+        .get('http://127.0.0.1:3009/order/last_month')
+        .then((response) => {
+          // this.card_yearIncome = response.data.data[0].subtotals
+          console.log(response.data.data)
         })
         .catch((error) => {
           console.log(error)

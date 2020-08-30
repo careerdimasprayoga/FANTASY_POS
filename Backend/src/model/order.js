@@ -19,9 +19,21 @@ module.exports = {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
-    }, total_yearIncome: () => {
+    }, total_yearIncome: (this_year) => {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT COUNT(*) as totals from orders", (error, result) => {
+            connection.query(`SELECT SUM(subtotal) AS subtotals FROM historys WHERE YEAR(date) >= YEAR${"('" + this_year + "')"}`, (error, result) => {
+                !error ? resolve(result) : reject(new Error(error))
+            });
+        })
+    }, this_month: () => {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT DATE(date) as dates, sum(subtotal) as subtotals FROM historys WHERE MONTH(date) = MONTH(NOW()) AND YEAR(date) = YEAR(NOW()) GROUP BY DATE(date)", (error, result) => {
+                !error ? resolve(result) : reject(new Error(error))
+            });
+        })
+    }, last_month: () => {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT DATE(date) as dates, sum(subtotal) as subtotals FROM historys WHERE MONTH(date) = MONTH(NOW() -INTERVAL "1" MONTH) AND YEAR(date) = YEAR(NOW()) GROUP BY DATE(date)', (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })

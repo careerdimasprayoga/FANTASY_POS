@@ -1,4 +1,4 @@
-const { postOrder, today_income, total_order, total_yearIncome, getAllOrder } = require("../model/order")
+const { postOrder, today_income, total_order, total_yearIncome, this_month, last_month, getAllOrder } = require("../model/order")
 const { postHistory } = require("../model/history")
 const helper = require("../helper/index.js")
 
@@ -27,7 +27,25 @@ module.exports = {
         }
     }, total_yearIncome: async (request, response) => {
         try {
-            const result = await total_yearIncome();
+            const dates = new Date()
+            const thisYear = dates.getFullYear() + "-01-01";
+            // console.log(thisYear)
+            // const thisYear = "2020-01-01";
+            const result = await total_yearIncome(thisYear);
+            return helper.response(response, 200, "Get Order Success", result);
+        } catch (error) {
+            return helper.response(response, 400, "Bad request", error);
+        }
+    }, this_month: async (request, response) => {
+        try {
+            const result = await this_month();
+            return helper.response(response, 200, "Get Order Success", result);
+        } catch (error) {
+            return helper.response(response, 400, "Bad request", error);
+        }
+    }, last_month: async (request, response) => {
+        try {
+            const result = await last_month();
             return helper.response(response, 200, "Get Order Success", result);
         } catch (error) {
             return helper.response(response, 400, "Bad request", error);
