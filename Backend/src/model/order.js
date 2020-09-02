@@ -37,8 +37,7 @@ module.exports = {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
-    },
-    postOrder: (dataOrder) => {
+    }, getOrderpostOrder: (dataOrder) => {
         return new Promise((resolve, reject) => {
             connection.query("INSERT INTO orders SET ?", dataOrder, (error, result) => {
                 if (!error) {
