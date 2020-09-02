@@ -1,12 +1,12 @@
-const { postOrder, today_income, total_order, total_yearIncome, this_month, last_month, getAllOrder } = require("../model/order")
+const { postOrder, today_income, total_order, total_yearIncome, this_month, last_month, getOrder } = require("../model/order")
 const { postHistory } = require("../model/history")
 const helper = require("../helper/index.js")
 
-
 module.exports = {
-    getAllOrder: async (request, response) => {
+
+    getOrder: async (request, response) => {
         try {
-            const result = await getAllOrder();
+            const result = await getOrder();
             return helper.response(response, 200, "Get Order Success", result);
         } catch (error) {
             return helper.response(response, 400, "Bad request", error);
@@ -29,8 +29,6 @@ module.exports = {
         try {
             const dates = new Date()
             const thisYear = dates.getFullYear() + "-01-01";
-            // console.log(thisYear)
-            // const thisYear = "2020-01-01";
             const result = await total_yearIncome(thisYear);
             return helper.response(response, 200, "Get Order Success", result);
         } catch (error) {
@@ -54,10 +52,8 @@ module.exports = {
         try {
             let dataPostman = request.body.orders
             // Handle History Subtotal
-            Array.prototype.sum = function (prop) {
-                var total = 0
-                for (var i = 0, _len = this.length; i < _len; i++) { total += this[i][prop] } return total
-            }
+            Array.prototype.sum = function (prop) { var total = 0; for (var i = 0, _len = this.length; i < _len; i++) { total += this[i][prop] } return total }
+
             let dataHistory = {
                 invoice: "1234", //dataPostman[0].invoice,
                 subtotal: (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
@@ -81,24 +77,5 @@ module.exports = {
             return helper.response(response, 400, "Bad Request", error);
         }
     }
+
 }
-
-
-// ORDER
-// id_order    |   id_product  |   nama_product    |    Gambar  |   id_history  |   price   |   ppn     |
-// 1           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 2           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 3           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 4           | 2             | Cafelatte         |            |1              | 15.000    | 1500      |
-// 5           | 2             | Caffucino         |            |2              | 15.000    | 1500      |
-
-// HISTORY
-// id_history  |   invoice     |   subtotal        |   Date        |
-// 1           | 320120        | 75000             | 2020-09-01    | 
-// 2
-// 3
-// 4
-
-// TRANSACTION
-// id_transaction   |   id_product  |   nama_product    |   price   |   ppn   |
-// 
