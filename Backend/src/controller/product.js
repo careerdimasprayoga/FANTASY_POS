@@ -1,6 +1,8 @@
 const { getProduct, searchProduct, getProductOrderName, getProductOrderCategory, getProductOrderDate, getProductOrderPrice, getProductCount, getProductById, postProduct, patchProduct, deleteProduct } = require("../model/product")
 const qs = require('querystring')
 const helper = require("../helper/index.js")
+const redis = require('redis')
+const client = redis.createClient()
 
 const getPrevLink = (page, currentQuery) => {
     if (page > 1) {
@@ -50,6 +52,8 @@ module.exports = {
         }
         try {
             const result = await getProduct(limit, offset, sort);
+            client.setex(`getProduct:${page}`, 3600, JSON.stringify(result)) // JSON stringify convert object to string | get selamanya
+            // Limit berapa lama ada di redis
             return helper.response(response, 200, "Get Product Success", result, pageInfo);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
@@ -171,11 +175,12 @@ module.exports = {
             const setData = {
                 id_category: request.body.id_category,
                 name: request.body.name,
-                image: request.body.image,
+                image: request.file === undefined ? "" : request.file.filename,
                 price: request.body.price,
                 created: new Date(),
                 status: request.body.status
             }
+            console.log(setData)
             const result = await postProduct(setData)
             return helper.response(response, 201, "Product Created", result);
         } catch (error) {

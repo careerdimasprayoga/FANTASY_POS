@@ -56,17 +56,15 @@ module.exports = {
             // Handle History Subtotal
             Array.prototype.sum = function (prop) {
                 var total = 0
-                for (var i = 0, _len = this.length; i < _len; i++) {
-                    total += this[i][prop]
-                } return total
+                for (var i = 0, _len = this.length; i < _len; i++) { total += this[i][prop] } return total
             }
             let dataHistory = {
-                invoice: dataPostman[0].invoice,
+                invoice: "1234", //dataPostman[0].invoice,
                 subtotal: (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
                 date: new Date()
             }
-            const resultHistory = await postHistory(dataHistory)
-            const history_id = (resultHistory.product_id)
+            const resultHistory = await postHistory(dataHistory)    // Await from model
+            const history_id = (resultHistory.product_id)           // Get inserID History
 
             for (let i = 0; i < dataPostman.length; i++) {
                 let dataOrder = {
@@ -76,7 +74,7 @@ module.exports = {
                     price: dataPostman[i].price,
                     ppn: dataPostman[i].price * 5 / 100
                 }
-                const resultOrder = await postOrder(dataOrder)
+                await postOrder(dataOrder)
             }
             return helper.response(response, 201, "Create Order Success", resultHistory);
         } catch (error) {

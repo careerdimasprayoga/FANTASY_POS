@@ -12,16 +12,20 @@
       </b-row>
       <b-row class="sidemenu-header-box text-center align-items-center">
         <b-col xl="12">
-          <a href="/" class="modify-link-text">
+          <!-- <a href="/" class="modify-link-text"> -->
+          <router-link to="/">
             <img src="../assets/images/icons/fork.png" style="width: 40px; height: 40px;" />
-          </a>
+          </router-link>
+          <!-- </a> -->
         </b-col>
       </b-row>
       <b-row class="sidemenu-header-box text-center align-items-center">
         <b-col xl="12">
-          <a href="/history" class="modify-link-text">
+          <!-- <a href="/history" class="modify-link-text"> -->
+          <router-link to="/history">
             <img src="../assets/images/icons/clipboard.png" style="width: 40px; height: 40px;" />
-          </a>
+          </router-link>
+          <!-- </a> -->
         </b-col>
       </b-row>
       <b-row class="sidemenu-header-box text-center align-items-center">
@@ -49,7 +53,7 @@
                   class="col-8 text-center"
                   style="margin-top: 5px;"
                 >
-                  <p style="font-size: 30px">Fantasy POS | History</p>
+                  <p style="font-size: 30px">Fantasy POS</p>
                 </b-col>
               </b-row>
             </b-container>
@@ -185,7 +189,7 @@
                     </b-col>
                     <b-col sm="12" style="margin-top: 20px; margin-bottom: 30px;">
                       <div style="background-color: white; border-radius: 5px;padding: 20px;">
-                        <h4 class="font-medium">Revenue</h4>
+                        <h4 class="font-medium">Recent Order</h4>
                         <b-table striped hover :items="order" :fields="tableFields"></b-table>
                       </div>
                     </b-col>
@@ -255,7 +259,7 @@ export default {
       orderDummy: [],
       order: [],
       page: 1,
-      limit: 3,
+      limit: 6,
       products: [],
       categorys: [],
       cart: [],

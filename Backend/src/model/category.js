@@ -1,24 +1,22 @@
 const connection = require("../config/mysql");
 
 module.exports = {
-    getAllCategory: () => {
+
+    getCategory: () => {
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT id as category_id, name as category_name FROM categorys`, (error, result) => {
+            connection.query("SELECT id as category_id, name as category_name FROM categorys", (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
-    },
-    getCategoryById: (id) => {
+    }, getCategoryById: (id) => {
         return new Promise((resolve, reject) => {
             connection.query("SELECT * FROM categorys WHERE id = ?", id, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             })
         })
-    },
-    postCategory: (setData) => {
+    }, postCategory: (setData) => {
         return new Promise((resolve, reject) => {
             connection.query("INSERT INTO categorys SET ?", setData, (error, result) => {
-                console.log(result)
                 if (!error) {
                     const newResult = {
                         ...setData
@@ -29,8 +27,7 @@ module.exports = {
                 }
             })
         })
-    },
-    patchCategory: (setData, id) => {
+    }, patchCategory: (setData, id) => {
         return new Promise((resolve, reject) => {
             connection.query("UPDATE categorys SET ? WHERE id = ?", [setData, id], (error, result) => {
                 if (!error) {
@@ -43,8 +40,7 @@ module.exports = {
                 }
             })
         })
-    },
-    deleteCategory: (id) => {
+    }, deleteCategory: (id) => {
         return new Promise((resolve, reject) => {
             connection.query("DELETE FROM categorys WHERE id = ?", id, (error, result) => {
                 if (!error) {
@@ -58,4 +54,5 @@ module.exports = {
             })
         })
     }
+
 }

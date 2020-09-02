@@ -1,60 +1,34 @@
-const { getAllHistory, postHistory } = require("../model/history")
+const { getHistory } = require("../model/history")
 const helper = require("../helper/index.js")
 
 module.exports = {
-    getAllHistory: async (request, response) => {
+    getHistory: async (request, response) => {
+        // Notes : bikin method baru frontend => orderYear, orderMonth, OrderDate = yes or null
         try {
-            const result = await getAllHistory();
-            return helper.response(response, 200, "Get History Success", result);
-        } catch(error) {
-            return helper.response(response, 400, "Bad request", error);
-        }
-    }, postHistory: async(request, response) => {
-        try {
-            // const invoiceGenerate = Math.floor((Math.random() * 1000000000) + 1);
-            // const setData = {
-            //     subtotal: request.body.price
-            // }
-            // for (i = 0; i < request.body.historys.length; i++) {  //loop through the array
-            //     total += historys[i].price;  //Do the math!
-            // }
-            // console.log(request.body.historys)
-            Array.prototype.sum = function (prop) {
-                var total = 0
-                for ( var i = 0, _len = this.length; i < _len; i++ ) {
-                    total += this[i][prop]
-                }
-                return total
+            console.log(request.query)
+            if (request.query.orderYear === "yes") {
+                requests = "year"
+                years = new Date().getFullYear() + "-" + "01" + "-" + "01";
+                const result = await getHistory(years, requests);
+                return helper.response(response, 200, "Get History Success", result);
+            } else if (request.query.orderMonth === "yes") {
+                requests = "month"
+                months = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + "01";
+                const result = await getHistory(months, requests);
+                return helper.response(response, 200, "Get History Success", result);
+            } else if (request.query.orderDay === "yes") {
+                requests = "day"
+                days = new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate().toString().padStart(2, "0");
+                const result = await getHistory(days, requests);
+                return helper.response(response, 200, "Get History Success", result);
+            } else {
+                requests = "monthir"
+                month = new Date().getFullYear() + "-" + new Date().getMonth() + "-" + "01";
+                const result = await getHistory(month, requests);
+                return helper.response(response, 200, "Get History Success", result);
             }
-            subtotal = request.body.historys.sum("price")
-            console.log(subtotal)
-            // console.log(request.body.historys.sum("price"))
-            // const result = await postCategory(setData)
-            return helper.response(response, 201, "Create Category Success", result);
         } catch (error) {
-            return helper.response(response, 400, "Bad Request", error);
-            console.log(request.body.name)
-            
+            return helper.response(response, 400, "Bad request", error);
         }
     }
 }
-
-
-// ORDER
-// id_order    |   id_product  |   nama_product    |    Gambar  |   id_history  |   price   |   ppn     |
-// 1           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 2           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 3           | 1             | Caffucino         |            |1              | 25.000    | 2500      |
-// 4           | 2             | Cafelatte         |            |1              | 15.000    | 1500      |
-// 5           | 2             | Caffucino         |            |2              | 15.000    | 1500      |
-
-// HISTORY
-// id_history  |   invoice     |   subtotal        |   Date        |
-// 1           | 320120        | 75000             | 2020-09-01    | 
-// 2
-// 3
-// 4
-
-// TRANSACTION
-// id_transaction   |   id_product  |   nama_product    |   price   |   ppn   |
-// 

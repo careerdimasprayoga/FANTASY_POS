@@ -1,13 +1,16 @@
 const connection = require("../config/mysql");
+const { request } = require("express");
 
 module.exports = {
-    getAllHistory: () => {
+    getHistory: (dates, requests) => {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM historys", (error, result) => {
+            console.log(requests)
+            connection.query("SELECT * FROM historys WHERE date >= ?", dates, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))
             });
         })
     }, postHistory: (dataHistory) => {
+        // Tips : dataHistory from Controller Order. This just used at order
         return new Promise((resolve, reject) => {
             connection.query("INSERT INTO historys SET ?", dataHistory, (error, result) => {
                 console.log(result)

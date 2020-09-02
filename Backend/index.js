@@ -17,6 +17,7 @@ app.use((request, response, next) => {
     next()
 })
 app.use("/", routerNavigation)
+app.use(express.static("uploads")) // Membuka akses upload => di url
 
 app.get("*", (request, response) => {
     response.status(404).response.send("Path not found")

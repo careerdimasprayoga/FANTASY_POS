@@ -1,7 +1,6 @@
 const router = require("express").Router()
-const  { postHistory, getAllHistory } = require('../controller/history')
+const { getHistory } = require('../controller/history')
 
-router.post("/", postHistory);
-router.get("/", getAllHistory);
+router.get("/", getHistory);
 
 module.exports = router

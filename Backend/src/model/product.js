@@ -52,7 +52,7 @@ module.exports = {
     }, postProduct: (setData) => {
         return new Promise((resolve, reject) => {
             connection.query("INSERT INTO products SET ?", setData, (error, result) => {
-                console.log(result)
+                console.log(error)
                 if (!error) {
                     const newResult = {
                         ...setData
