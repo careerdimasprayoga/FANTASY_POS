@@ -5,8 +5,8 @@ const { request, response } = require('express')
 
 module.exports = {
     getProductRedis: (request, response, next) => {
-        let { page } = request.query
-        client.get(`getProduct:${page}`, (error, result) => {
+        let { page, limit } = request.query
+        client.get(`getProduct,page:${page},limit:${limit}`, (error, result) => {
             if (!error && result != null) {
                 console.log('Ada data redis')
                 return helper.response(response, 200, JSON.parse(result))
@@ -15,8 +15,7 @@ module.exports = {
                 next()
             }
         })
-    },
-    clearDataProductRedis: (request, response, next) => {
+    }, clearDataProductRedis: (request, response, next) => {
         client.flushall((error, result) => {
             console.log(result)
         })

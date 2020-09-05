@@ -3,6 +3,7 @@ const qs = require('querystring')
 const helper = require("../helper/index.js")
 const redis = require('redis')
 const client = redis.createClient()
+const fs = require('fs')
 
 const getPrevLink = (page, currentQuery) => {
     if (page > 1) {
@@ -52,7 +53,7 @@ module.exports = {
         }
         try {
             const result = await getProduct(limit, offset, sort);
-            client.setex(`getProduct:${page}`, 3600, JSON.stringify(result)) // JSON stringify convert object to string | get selamanya
+            client.setex(`getProduct,page:${page},limit:${limit}`, 3600, JSON.stringify(result)) // JSON stringify convert object to string | get selamanya
             // Limit berapa lama ada di redis
             return helper.response(response, 200, "Get Product Success", result, pageInfo);
         } catch (error) {
@@ -171,11 +172,14 @@ module.exports = {
             return helper.response(response, 400, "Bad Request", error);
         }
     }, postProduct: async (request, response) => {
+        if (!request.file) {
+            return helper.response(response, 400, 'Image required')
+        }
         try {
             const setData = {
                 id_category: request.body.id_category,
                 name: request.body.name,
-                image: request.file === undefined ? "" : request.file.filename,
+                image: request.file === undefined ? "no image" : request.file.filename,
                 price: request.body.price,
                 created: new Date(),
                 status: request.body.status
@@ -190,15 +194,28 @@ module.exports = {
         try {
             const { id } = request.params
             const { name, price, id_category, status } = request.body
+            const id_product = await getProductById(id)
+
             const setData = {
-                name: request.body.name,
-                price: request.body.price,
-                id_category: request.body.id_category,
+                name: name,
+                image: !request.file ? id_product[0].image : request.file.filename,
+                price: price,
+                id_category: id_category,
                 updated: new Date(),
-                status: request.body.status
+                status: status
             }
-            const checkId = await getProductById(id)
-            if (checkId.length > 0) {
+
+            if (setData.name === '') {
+                return helper.response(response, 400, 'Name required')
+            } else if (setData.price === '') {
+                return helper.response(response, 400, 'Price required')
+            } else if (setData.id_category === '') {
+                return helper.response(response, 400, 'Category required')
+            } else if (setData.status === '') {
+                return helper.response(response, 400, 'Status required')
+            }
+
+            if (id_product.length > 0) {
                 const result = await patchProduct(setData, id)
                 return helper.response(response, 200, "Update Product Success", result);
             } else {
@@ -210,8 +227,15 @@ module.exports = {
     }, deleteProduct: async (request, response) => {
         try {
             const { id } = request.params
-            const result = await deleteProduct(id)
-            response.send("Delete Product Success")
+            const id_product = await getProductById(id)
+            fs.unlink(`./uploads/${id_product[0].image}`, async (error) => {
+                if (error) {
+                    throw error
+                } else {
+                    const result = await deleteProduct(id)
+                    return helper.response(response, 201, 'Product Deleted', result)
+                }
+            })
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
         }
