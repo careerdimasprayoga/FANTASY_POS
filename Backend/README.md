@@ -25,6 +25,15 @@
 7. Choose HTTP Method and enter request url.(ex. localhost:3009/)
 8. You can see all the end point [here](#end-point)
 
+## Regulation the app 
+
+1. You can import request_postman.json to postman.
+2. Be sure login first at Auth folder and copy token response to Authorization at edit collection, Authorization. Be sure Type at Authorization is Bearer Token.
+3. User status 0 (Non active), 1 (Active).
+4. User Role_id 1 (Cahier), 2 (Admin).
+5. You cant use the app if user status = 0 or non active.
+6. You can access all backend if using user role_id = 2 or admin.
+
 ## Set up .env file
 
 Open .env file on your favorite code editor, and copy paste this code below :
