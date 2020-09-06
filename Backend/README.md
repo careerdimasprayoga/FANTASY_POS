@@ -20,7 +20,7 @@
 2. Type `npm install`
 3. Make new file a called **.env**, set up first [here](#set-up-env-file)
 4. Turn on Web Server and MySQL can using Third-party tool like xampp, etc.
-5. Create a database with the name #nama_database, and Import file sql to **phpmyadmin**
+5. Create a database with the name career_pos_fantasy, and Import file sql to **phpmyadmin**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
 8. You can see all the end point [here](#end-point)
@@ -37,18 +37,18 @@ DB_HOST=localhost // Database host
 
 **1. GET**
 
-- `/product`(Get all product)
+- `/product?limit=6&page=1`(Get all product with pagination and limit)
 
 **2. POST**
 
 - `/product` (Post product)
-  - `{ "product_name": "Kipas", "category_id": 2, "product_harga": 50000 , "product_status" : 1 | 0}`
+  - `{ "id_category": 2, "name": "Mie ayam", "image": [upload file] , "price" : 10000 , "status" : 0 | 0}`
 
 **3. PATCH**
 
 - `/product/:id` (Update product by id)
 
-  - `{"product_name" : "Mouse", "category_id" : 1, "product_harga" : 100000, "product_status" : 1 | 0}`
+  - `{ "id_category": 2, "name": "Mie Pangsit", "image": [upload file] , "price" : 10000 , "status" : 0 | 0}`
 
 **4. DELETE**
 
