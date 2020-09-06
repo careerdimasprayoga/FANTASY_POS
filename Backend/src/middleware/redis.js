@@ -15,10 +15,38 @@ module.exports = {
                 next()
             }
         })
-    }, clearDataProductRedis: (request, response, next) => {
-        client.flushall((error, result) => {
-            console.log(result)
+    },
+    getCategoryRedis: (request, response, next) => {
+        client.get(`getCategory`, (error, result) => {
+            if (!error && result != null) {
+                console.log('Ada data redis')
+                return helper.response(response, 200, JSON.parse(result))
+            } else {
+                console.log('No data redis')
+                next()
+            }
         })
-        next()
+    }, clearDataProductRedis: (request, response, next) => {
+        client.keys("getProduct*", (err, keys) => {
+            if (keys.length > 0) {
+                keys.forEach((value) => {
+                    client.del(value)
+                })
+            }
+            next()
+        })
+        // client.flushall((error, result) => { // all redis deleted
+        //     console.log(result)
+        // })
+        // next()
+    }, clearDataCategoryRedis: (request, response, next) => {
+        client.keys("getCategory*", (err, keys) => {
+            if (keys.length > 0) {
+                keys.forEach((value) => {
+                    client.del(value)
+                })
+            }
+            next()
+        })
     }
 }

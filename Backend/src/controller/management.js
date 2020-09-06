@@ -1,22 +1,22 @@
-const { getCategory, getCategoryById, postCategory, patchCategory, deleteCategory } = require("../model/category")
+const { user_get, user_get_id, user_edit } = require("../model/management")
+const bcrypt = require('bcrypt')
 const helper = require("../helper/index.js")
 const redis = require('redis')
 const client = redis.createClient()
 
 module.exports = {
-
-    getCategory: async (request, response) => {
+    user_get: async (request, response) => {
         try {
-            const result = await getCategory();
+            const result = await user_get();
             client.setex(`getCategory`, 3600, JSON.stringify(result))
             return helper.response(response, 200, "Get Category Success", result);
         } catch (error) {
             return helper.response(response, 400, "Bad request", error);
         }
-    }, getCategoryById: async (request, response) => {
+    }, user_get_id: async (request, response) => {
         try {
             const { id } = request.params
-            const result = await getCategoryById(id)
+            const result = await user_get_id(id)
             if (result.length > 0) {
                 return helper.response(response, 200, "Get Category by ID Success", result);
             } else {
@@ -25,21 +25,30 @@ module.exports = {
         } catch (error) {
             return helper.response(response, 400, "Bad request", error);
         }
-    }, postCategory: async (request, response) => {
-        try {
-            const setData = { name: request.body.name }
-            const result = await postCategory(setData)
-            return helper.response(response, 201, "Create Category Success", result);
-        } catch (error) {
-            return helper.response(response, 400, "Bad Request", error);
-        }
-    }, patchCategory: async (request, response) => {
+    }, user_edit: async (request, response) => {
         try {
             const { id } = request.params
-            const setData = { name: request.body.name }
-            const checkId = await getCategoryById(id)
-            if (checkId.length > 0) {
-                const result = await patchCategory(setData, id)
+            const { name, email, password, status, role_id } = request.body
+            const salt = bcrypt.genSaltSync(10)
+            const encrypt_password = bcrypt.hashSync(password, salt)
+            const setData = {
+                name,
+                email,
+                password: encrypt_password,
+                role_id,
+                status,
+                updated: new Date()
+            }
+            check_user = await user_get_id(id)
+            if (setData.name === '') {
+                return helper.response(response, 400, "Name cannot be empty");
+            } else if (setData.email === '') {
+                return helper.response(response, 400, "Email cannot be empty");
+            } else if (password < 8) {
+                return helper.response(response, 400, "Password must be up 8 character");
+            }
+            if (check_user.length > 0) {
+                const result = await user_edit(setData, id)
                 return helper.response(response, 200, "Update Category Success", result);
             } else {
                 return helper.response(response, 404, "Bad Request");
@@ -47,7 +56,7 @@ module.exports = {
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);
         }
-    }, deleteCategory: async (request, response) => {
+    }, user_delete: async (request, response) => {
         try {
             const { id } = request.params
             const result = await deleteCategory(id)
@@ -56,5 +65,4 @@ module.exports = {
             return helper.response(response, 400, "Bad Request", error);
         }
     }
-
 }

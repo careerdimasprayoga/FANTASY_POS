@@ -18,8 +18,7 @@ module.exports = {
                 }
             })
         })
-    },
-    check_user: (email) => {
+    }, check_user: (email) => {
         return new Promise((resolve, reject) => {
             connection.query("SELECT * FROM users WHERE email = ?", email, (error, result) => {
                 !error ? resolve(result) : reject(new Error(error))

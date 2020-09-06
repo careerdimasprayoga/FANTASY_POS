@@ -6,7 +6,7 @@ const { post_user, check_user } = require('../model/users')
 module.exports = {
     register_user: async (request, response) => {
         const { email, password, name } = request.body
-        const salt = bcrypt.genSaltSync(10) // Penggunanan dokumentasi bcrypt
+        const salt = bcrypt.genSaltSync(10)
         const encrypt_password = bcrypt.hashSync(password, salt)
         const setData = {
             email,
@@ -17,8 +17,19 @@ module.exports = {
             created: new Date()
         }
         try {
-            const result = await post_user(setData)
-            return helper.response(response, 200, "Success Register User", result)
+            const check_email = await check_user(setData.email)
+            if (setData.email === '' || setData.email.search() < 0) {
+                return helper.response(response, 400, 'Email cannot be empty')
+            } else if (check_email.length > 0) {
+                return helper.response(response, 400, 'Email is already registered')
+            } else if (request.body.password.length < 8) {
+                return helper.response(response, 400, 'Password must be up to 8 characters')
+            } else if (setData.name === '') {
+                return helper.response(response, 400, 'Name cannot be empty')
+            } else {
+                const result = await post_user(setData)
+                return helper.response(response, 200, "Success Register User", result)
+            }
         } catch (error) {
             return helper.response(response, 400, "Bad Request")
         }
