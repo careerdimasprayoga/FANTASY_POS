@@ -22,7 +22,7 @@
 4. Turn on Web Server and MySQL can using Third-party tool like xampp, etc.
 5. Create a database with the name career_pos_fantasy, and Import file sql to **phpmyadmin**
 6. Open Postman desktop application or Chrome web app extension that has installed before
-7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
+7. Choose HTTP Method and enter request url.(ex. localhost:3009/)
 8. You can see all the end point [here](#end-point)
 
 ## Set up .env file
