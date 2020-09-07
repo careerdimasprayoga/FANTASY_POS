@@ -44,7 +44,7 @@ DB_HOST=career_pos_fantasy // Database name
 ```
 
 ## End Point
-### you can see detail request on https://web.postman.co/collections/12330794-422e74a4-658d-4037-807e-1cb52e273581?version=latest&workspace=98e0826c-617c-4160-85f7-639a617d5bf3
+you can see detail request on https://web.postman.co/collections/12330794-422e74a4-658d-4037-807e-1cb52e273581?version=latest&workspace=98e0826c-617c-4160-85f7-639a617d5bf3
 
 **1. GET**
 
