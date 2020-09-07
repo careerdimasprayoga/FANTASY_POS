@@ -1,7 +1,7 @@
 module.exports = {
     response: (response, status, msg, data, pagination) => {
         const result = {}
-        result.status = status || 200 // Kalo ga ada maka 200
+        result.status = status || 200
         result.msg = msg
         result.data = data
         result.pagination = pagination

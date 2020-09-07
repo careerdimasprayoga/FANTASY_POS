@@ -5,7 +5,6 @@ module.exports = {
     getHistory: async (request, response) => {
         // Notes : bikin method baru frontend => orderYear, orderMonth, OrderDate = yes or null
         try {
-            console.log(request.query)
             if (request.query.orderYear === "yes") {
                 requests = "year"
                 years = new Date().getFullYear() + "-" + "01" + "-" + "01";

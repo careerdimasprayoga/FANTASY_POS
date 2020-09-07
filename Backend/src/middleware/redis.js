@@ -8,10 +8,8 @@ module.exports = {
         let { page, limit } = request.query
         client.get(`getProduct,page:${page},limit:${limit}`, (error, result) => {
             if (!error && result != null) {
-                console.log('Ada data redis')
                 return helper.response(response, 200, JSON.parse(result))
             } else {
-                console.log('No data redis')
                 next()
             }
         })
@@ -19,10 +17,8 @@ module.exports = {
     getCategoryRedis: (request, response, next) => {
         client.get(`getCategory`, (error, result) => {
             if (!error && result != null) {
-                console.log('Ada data redis')
                 return helper.response(response, 200, JSON.parse(result))
             } else {
-                console.log('No data redis')
                 next()
             }
         })
@@ -35,10 +31,6 @@ module.exports = {
             }
             next()
         })
-        // client.flushall((error, result) => { // all redis deleted
-        //     console.log(result)
-        // })
-        // next()
     }, clearDataCategoryRedis: (request, response, next) => {
         client.keys("getCategory*", (err, keys) => {
             if (keys.length > 0) {

@@ -3,9 +3,7 @@ const connection = require('../config/mysql')
 module.exports = {
     post_user: (setData) => {
         return new Promise((resolve, reject) => {
-            // console.log(setData)
             connection.query("INSERT INTO users SET ?", setData, (error, result) => {
-                console.log(error)
                 if (!error) {
                     const newResult = {
                         id: result.insertId,

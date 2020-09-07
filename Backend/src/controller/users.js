@@ -18,8 +18,8 @@ module.exports = {
         }
         try {
             const check_email = await check_user(setData.email)
-            if (setData.email === '' || setData.email.search() < 0) {
-                return helper.response(response, 400, 'Email cannot be empty')
+            if (setData.email === '' || setData.email.search('@') < 0) {
+                return helper.response(response, 400, 'Email cannot be empty and must valid email')
             } else if (check_email.length > 0) {
                 return helper.response(response, 400, 'Email is already registered')
             } else if (request.body.password.length < 8) {

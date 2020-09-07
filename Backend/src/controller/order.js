@@ -51,16 +51,15 @@ module.exports = {
     }, postOrder: async (request, response) => {
         try {
             let dataPostman = request.body.orders
-            // Handle History Subtotal
             Array.prototype.sum = function (prop) { var total = 0; for (var i = 0, _len = this.length; i < _len; i++) { total += this[i][prop] } return total }
 
             let dataHistory = {
-                invoice: "1234", //dataPostman[0].invoice,
+                invoice: "1234",
                 subtotal: (dataPostman.sum("price")) + (dataPostman.sum("ppn")),
                 date: new Date()
             }
-            const resultHistory = await postHistory(dataHistory)    // Await from model
-            const history_id = (resultHistory.product_id)           // Get inserID History
+            const resultHistory = await postHistory(dataHistory)
+            const history_id = (resultHistory.product_id)
 
             for (let i = 0; i < dataPostman.length; i++) {
                 let dataOrder = {

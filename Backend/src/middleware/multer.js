@@ -3,7 +3,6 @@ const helper = require('../helper/index')
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
-        console.log(file)
         callback(null, './uploads/')
     }, filename: (request, file, callback) => {
         callback(null, file.fieldname + '-' + new Date().toISOString().replace(/:/g, '-') + "-" + file.originalname)
@@ -25,9 +24,7 @@ const uploadFilter = (request, response, next) => {
             return helper.response(response, 400, err.message)
         } else if (err) {
             return helper.response(response, 400, err.message)
-        } //else if (!request.file) {
-        //return helper.response(response, 400, "Please select an image to upload")
-        //}
+        }
         next()
     })
 }

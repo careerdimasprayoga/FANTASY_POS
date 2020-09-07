@@ -40,7 +40,7 @@ module.exports = {
     }, getProductCount: () => {
         return new Promise((resolve, reject) => {
             connection.query("SELECT COUNT(*) as total FROM products", (error, result) => {
-                !error ? resolve(result[0].total) : reject(new Error(error)) // Conver array to number
+                !error ? resolve(result[0].total) : reject(new Error(error))
             });
         })
     }, getProductById: (id) => {
@@ -52,7 +52,6 @@ module.exports = {
     }, postProduct: (setData) => {
         return new Promise((resolve, reject) => {
             connection.query("INSERT INTO products SET ?", setData, (error, result) => {
-                console.log(error)
                 if (!error) {
                     const newResult = {
                         ...setData

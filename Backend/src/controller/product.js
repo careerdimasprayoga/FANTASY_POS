@@ -10,10 +10,8 @@ const getPrevLink = (page, currentQuery) => {
         const generatedPage = {
             page: page - 1
         }
-        const resultPrevLink = { ...currentQuery, ...generatedPage } // spread operator
+        const resultPrevLink = { ...currentQuery, ...generatedPage }
         return qs.stringify(resultPrevLink)
-        // console.log(resultPrevLink) // Bentuk object
-        // console.log(qs.stringify(resultPrevLink)) // Bentuk string
     } else {
         return null
     }
@@ -184,7 +182,6 @@ module.exports = {
                 created: new Date(),
                 status: request.body.status
             }
-            console.log(setData)
             const result = await postProduct(setData)
             return helper.response(response, 201, "Product Created", result);
         } catch (error) {
