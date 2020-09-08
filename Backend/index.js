@@ -23,6 +23,6 @@ app.get("*", (request, response) => {
     response.status(404).response.send("Path not found")
 })
 
-app.listen(3009, "127.0.0.1", () => {
-    console.log("Express running at host: 127.0.0.1 and port: 3009")
+app.listen(precess.env.PORT, process.env.IP, () => {
+    console.log(`Express running at host: ${process.env.IP} and port: ${process.env.PORT}`)
 });
