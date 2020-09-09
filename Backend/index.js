@@ -20,7 +20,7 @@ app.use("/", routerNavigation)
 app.use(express.static("uploads")) // Membuka akses upload => di url
 
 app.get("*", (request, response) => {
-    response.status(404).response.send("Path not found")
+    response.status(404).send("Path not found")
 })
 
 app.listen(process.env.PORT, process.env.IP, () => {
