@@ -34,12 +34,12 @@ module.exports = {
         page = parseInt(page)
         limit = parseInt(limit)
         let totalData = await getProductCount()
-        let totalPage = Math.ceil(totalData / limit) // Pembulatan
-        let offset = page * limit - limit // Offset query
+        let totalPage = Math.ceil(totalData / limit)
+        let offset = page * limit - limit
         let prevLink = getPrevLink(page, request.query)
         let nextLink = getNextLink(page, totalPage, request.query)
         const pageInfo = {
-            page, // Kalo sama = page = page
+            page,
             totalPage,
             limit,
             totalData,
@@ -51,8 +51,7 @@ module.exports = {
         }
         try {
             const result = await getProduct(limit, offset, sort);
-            client.setex(`getProduct,page:${page},limit:${limit}`, 3600, JSON.stringify(result)) // JSON stringify convert object to string | get selamanya
-            // Limit berapa lama ada di redis
+            client.setex(`getProduct,page:${page},limit:${limit}`, 3600, JSON.stringify(result))
             return helper.response(response, 200, "Get Product Success", result, pageInfo);
         } catch (error) {
             return helper.response(response, 400, "Bad Request", error);

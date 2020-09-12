@@ -1,6 +1,6 @@
 <h1 align="center">ExpressJS - Fantasy POS RESTfull API</h1>
 
-#Learning about backend development and make application for help selling. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+Make API for Frontend Fantasy POS for handle modul application Point Of Sales. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 ## Built With
 

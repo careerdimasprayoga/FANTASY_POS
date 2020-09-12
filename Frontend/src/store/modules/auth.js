@@ -10,7 +10,6 @@ export default {
     dataUser(state, payload) {
       state.user = payload
       state.token = payload.token
-      // console.log(payload)
     },
     delUser(state) {
       state.user = {}
@@ -20,10 +19,18 @@ export default {
   actions: {
     login(context, payload) {
       return new Promise((resolve, reject) => {
-        axios.post('http://127.0.0.1:3009/user/login', payload).then(response => {
-          console.log(response)
+        axios.post(`${process.env.VUE_APP_BASE_URL}/user/login`, payload).then(response => {
           context.commit('dataUser', response.data.data)
           localStorage.setItem('token', response.data.data.token)
+          resolve(response.data.data)
+        }).catch(error => {
+          reject(error.response)
+        })
+      })
+    },
+    register(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${process.env.VUE_APP_BASE_URL}http://127.0.0.1:3009/user/register`, payload).then(response => {
           resolve(response.data.data)
         }).catch(error => {
           reject(error.response)
@@ -68,6 +75,9 @@ export default {
   getters: {
     isLogin(state) {
       return state.token !== null
+    },
+    data_user(state) {
+      return state.user
     }
   }
 }

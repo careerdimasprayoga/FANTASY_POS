@@ -17,7 +17,7 @@ module.exports = {
     getCategoryRedis: (request, response, next) => {
         client.get(`getCategory`, (error, result) => {
             if (!error && result != null) {
-                return helper.response(response, "Get Category Redis Success", 200, JSON.parse(result))
+                return helper.response(response, 200, "Get Category Redis Success", JSON.parse(result))
             } else {
                 next()
             }

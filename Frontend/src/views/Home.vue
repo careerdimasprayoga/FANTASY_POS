@@ -28,12 +28,14 @@
           <!-- </a> -->
         </b-col>
       </b-row>
-      <b-row class="sidemenu-header-box text-center align-items-center">
+      <b-row v-if="data_user.role_id===2" class="sidemenu-header-box text-center align-items-center">
         <b-col xl="12">
           <b-button v-b-modal.modal-lg style="background-color: transparent; border: none;">
             <img src="../assets/images/icons/add.png" style="width: 40px; height: 40px;" />
           </b-button>
         </b-col>
+      </b-row>
+      <b-row v-else class="sidemenu-header-box text-center align-items-center">
       </b-row>
     </div>
     <!-- End sidemenu -->
@@ -173,7 +175,9 @@
                 </b-col>
                 <b-col xl="1" lg="2" md="2" sm="2" xs="1" class="col-2" style="margin-top: 15px;">
                   <button class="btn-custom">
-                    <img src="../assets/images/icons/find.png" style="width: 30px; height: 30px" />
+                    <a @click="logout">
+                      <img src="../assets/images/icons/logout.png" style="width: 30px; height: 30px" />
+                    </a>
                   </button>
                 </b-col>
               </b-row>
@@ -243,7 +247,7 @@
 
                     <b-col xl="4" lg="6" md="12" v-for="(item, index) in products" :key="index">
                       <b-card
-                        img-src=""
+                        img-src="https://picsum.photos/600/300/?image=306"
                         img-alt="Image"
                         img-top
                         class="custom-card"
@@ -268,7 +272,7 @@
                     :total-rows="rows"
                     :per-page="perPage"
                     aria-controls="my-table"
-                    @change="handlePage"
+                    @change="change_page"
                     align-h="end"
                   ></b-pagination>
                 </b-container>
@@ -280,7 +284,7 @@
                   <b-col xl="12" v-if="cart.length > 0">
                     <div class="mt-3 mr-3" v-for="(item, index) in cart" :key="index">
                       <b-card
-                        v-bind:img-src="require(`../assets/images/products/${item.product_image}`)"
+                        img-src="https://picsum.photos/600/300/?image=306"
                         img-alt="Card image"
                         img-left
                         class="custom-card-cart custom-padding-cart-body"
@@ -427,23 +431,25 @@ export default {
     ...mapGetters({
       products: 'get_product',
       rows: 'getTotalRows',
-      limit: 'getLimit'
+      limit: 'getLimit',
+      data_user: 'data_user'
     })
   },
   created() {
     this.get_products()
     this.get_category()
-    console.log('Halo')
-    // console.log(products)
   },
   methods: {
     ...mapActions([
-      'get_products'
+      'get_products',
+      'logout'
     ]),
-    ...mapMutations(['changePage']),
-    handlePage(pages) {
-      this.$router.push(`?page=${pages}`)
-      this.page(pages)
+    ...mapMutations(['s_change_page']),
+    change_page(page) {
+      if (parseInt(this.$route.query.page) !== page) {
+        this.$router.push(`?page=${page}`)
+      }
+      this.s_change_page(page)
       this.get_products()
     },
     checkout() {

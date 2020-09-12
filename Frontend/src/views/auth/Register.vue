@@ -4,14 +4,27 @@
       <div class="col-sm-5 mx-auto">
         <div class="card card-signin my-5" style="border-radius: 20px; box-shadow: 5px 10px 8px #888888;">
           <div class="card-body">
-            <h3 class="card-title text-center mb-4">Sign In</h3>
+            <h3 class="card-title text-center mb-4">Register</h3>
             <b-form @submit.prevent="onSubmit" @reset.prevent="onReset">
+              <b-form-input
+                type="text"
+                v-model="form.name"
+                placeholder="Name"
+                required
+              />
+              <small id="passwordHelpBlock" class="form-text text-muted">
+                * Required.
+              </small>
+              <br />
               <b-form-input
                 type="email"
                 v-model="form.email"
                 placeholder="Email"
                 required
               />
+              <small id="passwordHelpBlock" class="form-text text-muted">
+                Must valid email.
+              </small>
               <br />
               <b-form-input
                 type="password"
@@ -19,6 +32,9 @@
                 placeholder="Password"
                 required
               />
+              <small id="passwordHelpBlock" class="form-text text-muted">
+                Atleast 8 character.
+              </small>
               <br />
               <b-button block variant="success" type="submit">
                 <b>Submit</b>
@@ -31,12 +47,12 @@
 
             <div>
               <p class="register-alert">
-                Don't have an account ?
-                <router-link to="/register">
+                Already have an account ?
+                <router-link to="/login">
                 <a
                   class="register-here"
                   type="register"
-                >Register here</a>
+                >Login here</a>
                 </router-link>
               </p>
             </div>
@@ -54,6 +70,7 @@ export default {
   data() {
     return {
       form: {
+        name: '',
         email: '',
         password: ''
       }
@@ -63,9 +80,9 @@ export default {
     ...mapState(['name'])
   },
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(['register']),
     onSubmit() {
-      this.login(this.form).then(result => {
+      this.register(this.form).then(result => {
         console.log(result)
         this.$router.push('/')
       }).catch(error => {

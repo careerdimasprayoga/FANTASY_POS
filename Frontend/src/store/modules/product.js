@@ -2,24 +2,26 @@ import axios from 'axios'
 
 export default {
   state: {
-    page: 3,
-    limit: 3,
+    page: 1,
+    limit: 6,
     totalRows: null,
     products: []
   },
   mutations: {
     data_product(state, payload) {
-      console.log(payload)
       state.products = payload.msg
       state.products = payload.data
-      state.totalRows = payload.data.totalData
+      // state.totalRows = payload.pagination.totalData
+    },
+    s_change_page(state, payload) {
+      state.page = payload
     }
   },
   actions: {
     get_products(context, payload) {
       axios
         .get(
-          `http://127.0.0.1:3009/product?page=${context.state.page}&limit=${context.state.limit}`
+          `${process.env.VUE_APP_BASE_URL}/product?page=${context.state.page}&limit=${context.state.limit}`
         )
         .then((response) => {
           context.commit('data_product', response.data)
