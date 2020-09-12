@@ -243,7 +243,7 @@
 
                     <b-col xl="4" lg="6" md="12" v-for="(item, index) in products" :key="index">
                       <b-card
-                        v-bind:img-src="require(`../assets/images/products/${item.image}`)"
+                        img-src=""
                         img-alt="Image"
                         img-top
                         class="custom-card"
@@ -388,14 +388,12 @@
 
 <script>
 import axios from 'axios'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'Axios',
   data() {
     return {
-      page: 1,
-      limit: 6,
-      products: [],
       categorys: [],
       cart: [],
       invoice: Math.floor(Math.random() * 1000000000 + 1),
@@ -422,20 +420,32 @@ export default {
       form_category: {
         name: ''
       },
-      varAlert: false,
-      totalRows: null
+      varAlert: false
     }
   },
   computed: {
-    rows() {
-      return this.totalRows
-    }
+    ...mapGetters({
+      products: 'get_product',
+      rows: 'getTotalRows',
+      limit: 'getLimit'
+    })
   },
   created() {
     this.get_products()
     this.get_category()
+    console.log('Halo')
+    // console.log(products)
   },
   methods: {
+    ...mapActions([
+      'get_products'
+    ]),
+    ...mapMutations(['changePage']),
+    handlePage(pages) {
+      this.$router.push(`?page=${pages}`)
+      this.page(pages)
+      this.get_products()
+    },
     checkout() {
       const setCart = {
         orders: [...this.cart]
@@ -496,22 +506,6 @@ export default {
         .get('http://127.0.0.1:3009/category')
         .then((response) => {
           this.categorys = response.data.data
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    get_products() {
-      axios
-        .get(
-          `http://127.0.0.1:3009/product?page=${this.page}&limit=${this.limit}&sort=${this.sort}`
-        )
-        .then((response) => {
-          this.products = response.data.data
-          this.totalRows = response.data.pagination.totalData
-          // console.log(response)
-          // this.perPage = response.data.pagination.totalPage
-          // console.log(response.data.pagination.totalPage)
         })
         .catch((error) => {
           console.log(error)
@@ -628,10 +622,6 @@ export default {
         .catch((error) => {
           console.log(error)
         })
-    },
-    handlePage(pages) {
-      this.page = pages
-      this.get_products()
     }
   }
 }

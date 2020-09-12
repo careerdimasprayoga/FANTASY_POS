@@ -17,7 +17,7 @@ module.exports = {
                 }
             })
         } else {
-            return helper.response(response, 200, "Please login first")
+            return helper.response(response, 400, "Please login first")
         }
     }, management_page: (request, response, next) => {
         let token = request.headers.authorization

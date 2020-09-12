@@ -8,7 +8,7 @@ module.exports = {
         let { page, limit } = request.query
         client.get(`getProduct,page:${page},limit:${limit}`, (error, result) => {
             if (!error && result != null) {
-                return helper.response(response, 200, JSON.parse(result))
+                return helper.response(response, 200, "Get Product Redis Success", JSON.parse(result))
             } else {
                 next()
             }
@@ -17,7 +17,7 @@ module.exports = {
     getCategoryRedis: (request, response, next) => {
         client.get(`getCategory`, (error, result) => {
             if (!error && result != null) {
-                return helper.response(response, 200, JSON.parse(result))
+                return helper.response(response, "Get Category Redis Success", 200, JSON.parse(result))
             } else {
                 next()
             }
