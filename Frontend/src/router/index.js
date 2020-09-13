@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import History from '../views/History.vue'
 import Login from '../views/auth/Login.vue'
 import Register from '../views/auth/Register.vue'
+import Management from '../views/Management.vue'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -32,6 +33,12 @@ const routes = [
     name: 'Register',
     component: Register,
     meta: { requiresVisitor: true }
+  },
+  {
+    path: '/management',
+    name: 'Management',
+    component: Management,
+    meta: { requiresAuth: true }
   }
 ]
 

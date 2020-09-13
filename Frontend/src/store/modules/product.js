@@ -4,7 +4,7 @@ export default {
   state: {
     page: 1,
     limit: 6,
-    totalRows: null,
+    total_rows: 9, // null
     products: []
   },
   mutations: {
@@ -25,11 +25,23 @@ export default {
         )
         .then((response) => {
           context.commit('data_product', response.data)
-        //   console.log(response)
+          //   console.log(response)
         })
         .catch((error) => {
           console.log(error)
         })
+    },
+    add_product(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:3009/product', payload)
+          .then(response => {
+            resolve(response.data)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
     }
   },
   getters: {
@@ -40,7 +52,7 @@ export default {
       return state.products
     },
     getTotalRows(state) {
-      return state.totalRows
+      return state.total_rows
     },
     getCart(state) {
       return state.cart

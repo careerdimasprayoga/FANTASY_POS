@@ -28,20 +28,23 @@
           <!-- </a> -->
         </b-col>
       </b-row>
-      <b-row v-if="data_user.role_id===2" class="sidemenu-header-box text-center align-items-center">
+      <b-row
+        v-if="data_user.role_id===2"
+        class="sidemenu-header-box text-center align-items-center"
+      >
         <b-col xl="12">
           <b-button v-b-modal.modal-lg style="background-color: transparent; border: none;">
             <img src="../assets/images/icons/add.png" style="width: 40px; height: 40px;" />
           </b-button>
         </b-col>
       </b-row>
-      <b-row v-else class="sidemenu-header-box text-center align-items-center">
-      </b-row>
+      <b-row v-else class="sidemenu-header-box text-center align-items-center"></b-row>
     </div>
     <!-- End sidemenu -->
     <!-- Modal -->
     <b-modal id="modal-lg" size="md" :title="this.modalTitle" hide-footer>
       <b-alert :show="varAlert">{{this.varAlertMessage}} Product Success</b-alert>
+      <b-alert :show="alert_image" class="small form-text text-muted">Max image is 1024 kb</b-alert>
       <b-form v-on:submit.prevent="addProduct">
         <!-- .prevent mengatasi reload -->
         <b-form-group id="input-group-1" label="Product Name" label-for="input-1">
@@ -55,7 +58,7 @@
         </b-form-group>
 
         <b-form-group id="input-group-2" label="Image" label-for="input-2">
-          <b-form-input v-model="form.image" id="input-2" required placeholder="Image"></b-form-input>
+          <b-form-file @change="handle_file" id="input-2" required placeholder="Image"></b-form-file>
         </b-form-group>
 
         <b-form-group id="input-group-3" label="Category" label-for="input-3">
@@ -176,7 +179,10 @@
                 <b-col xl="1" lg="2" md="2" sm="2" xs="1" class="col-2" style="margin-top: 15px;">
                   <button class="btn-custom">
                     <a @click="logout">
-                      <img src="../assets/images/icons/logout.png" style="width: 30px; height: 30px" />
+                      <img
+                        src="../assets/images/icons/logout.png"
+                        style="width: 30px; height: 30px"
+                      />
                     </a>
                   </button>
                 </b-col>
@@ -405,6 +411,7 @@ export default {
       sort: '',
       sortText: 'Sort',
       varAlertMessage: '',
+      alert_image: false,
       modalTitle: 'Add Product',
       productId: '',
       buttonModalSave: true,
@@ -416,7 +423,7 @@ export default {
       ],
       form: {
         name: '',
-        image: '',
+        image: {},
         id_category: '',
         price: '',
         status: ''
@@ -440,10 +447,7 @@ export default {
     this.get_category()
   },
   methods: {
-    ...mapActions([
-      'get_products',
-      'logout'
-    ]),
+    ...mapActions(['get_products', 'logout', 'add_product']),
     ...mapMutations(['s_change_page']),
     change_page(page) {
       if (parseInt(this.$route.query.page) !== page) {
@@ -578,10 +582,24 @@ export default {
           console.log(error)
         })
     },
+    handle_file(event) {
+      this.form.image = event.target.files[0]
+      console.log(this.form.image.size)
+      if (this.form.image.size >= 1000000) {
+        this.alert_image = true
+      } else {
+        this.alert_image = false
+      }
+    },
     addProduct() {
       this.modalTitle = 'Add Product'
-      axios
-        .post('http://127.0.0.1:3009/product', this.form)
+      const data = new FormData()
+      data.append('name', this.form.name)
+      data.append('id_category', this.form.id_category)
+      data.append('price', this.form.price)
+      data.append('status', this.form.status)
+      data.append('image', this.form.image)
+      this.add_product(data)
         .then((response) => {
           this.varAlertMessage = 'Add'
           this.varAlert = true
